@@ -1,0 +1,32 @@
+Released under the MIT License:
+http://www.opensource.org/licenses/mit-license.php
+
+Rack Legacy tries to provide interaction with legacy environments like
+PHP and CGI while still getting the Rack portability.
+
+This software is currently ALPHA quality as it is just being used to
+hack on a project that has a mix of Ruby and PHP without having to
+install the entire PHP stack (Apache, mod_php, etc.). With just
+php-cgi installed this middleware will allow the PHP to be executed
+under a simple mongrel server (or whatever your desired flavor).
+
+Specific things that are lacking:
+
+* TESTS- We are currently not testing the CGI part very much. The PHP
+tests implicitly test the CGI work as the PHP is being executed through
+the CGI interface. But it would be nice to have some plain CGI tests
+also.
+
+* SECURITY - Although I tried to not do anything dumb this module does
+execute external processes via a web service. Obviously security is an
+issue of concern. Right now I am just using this for local development
+(when it moves to production it gets a full Apache stack with real PHP
+and Passenger). So the security suffices for local development. An audit
+would be useful before someone put this on a production server.
+
+* FULL CGI SUPPORT - I doubt I am fully supporting the CGI interface.
+I have really only tested GET requests (although POST are coming soon).
+There is also dealing with things like file uploads.
+
+But if you can live with all that feel free to use this software and
+send me patches.
