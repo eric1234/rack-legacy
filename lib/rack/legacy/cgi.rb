@@ -1,3 +1,5 @@
+require 'fileutils'
+
 module Rack
   module Legacy
     class Cgi
@@ -6,7 +8,7 @@ module Rack
       # programs located in the given public_dir
       #
       #   use Rack::Legacy::Cgi, 'cgi-bin'
-      def initialize(app, public_dir)
+      def initialize(app, public_dir=FileUtils.pwd)
         @app = app
         @public_dir = public_dir
       end
@@ -42,16 +44,27 @@ module Rack
         headers = {}
         body = ''
 
-        IO.popen('-') do |io|
+        IO.popen('-', 'r+') do |io|
           if io.nil?  # Child
             env.each {|k, v| ENV[k] = v if v.respond_to? :to_str}
             exec path
           else        # Parent
-            while (line = io.readline.chomp) != ""
-              key, value = line.split /\s*\:\s*/
-              headers[key] = value
+            io.write(env['rack.input'].read) if env['rack.input']
+            io.close_write
+            Process.wait
+            if $?.exitstatus == 0
+              until io.eof? || (line = io.readline.chomp) == ''
+                if line =~ /\s*\:\s*/
+                  key, value = line.split /\s*\:\s*/
+                  headers[key] = value
+                end
+              end
+              body = io.read
+            else
+              status = 500
+              headers['Content-Type'] = 'text/plain'
+              body = 'Error'
             end
-            body = io.read
           end
         end
   

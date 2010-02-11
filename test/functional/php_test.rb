@@ -18,10 +18,9 @@ class PhpTest < Test::Unit::TestCase
   # Should operate much like success
   def test_syntax_error
     response = HTTParty.get('http://localhost:4000/syntax_error.php')
-    assert_match /Parse error/, response.body
-    assert_equal 200, response.code
-    assert_equal 'text/html', response.headers['content-type'].first
-    assert_match /^PHP/, response.headers['x-powered-by'].first
+    assert_match /Error/, response.body
+    assert_equal 500, response.code
+    assert_equal 'text/plain', response.headers['content-type'].first
   end
 
   def test_not_found

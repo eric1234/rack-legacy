@@ -8,7 +8,7 @@ module Rack
       # of which executable to use to run the PHP code.
       #
       #  use Rack::Legacy::Php, 'public', 'php5-cgi'
-      def initialize(app, public_dir, php_exe='php-cgi')
+      def initialize(app, public_dir=FileUtils.pwd, php_exe='php-cgi')
         super app, public_dir
         @php_exe = php_exe
       end

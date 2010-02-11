@@ -12,21 +12,28 @@ under a simple mongrel server (or whatever your desired flavor).
 
 Specific things that are lacking:
 
-* TESTS- We are currently not testing the CGI part very much. The PHP
-tests implicitly test the CGI work as the PHP is being executed through
-the CGI interface. But it would be nice to have some plain CGI tests
-also.
+TESTS
+  Tests are a bit lacking now. We have end-to-end functional tests for
+  PHP and some unit tests for CGI. We are currently not testing things
+  like multipart POST (although early testing of form/data post seems
+  to indicate that POSTing in any form should work).
 
-* SECURITY - Although I tried to not do anything dumb this module does
-execute external processes via a web service. Obviously security is an
-issue of concern. Right now I am just using this for local development
-(when it moves to production it gets a full Apache stack with real PHP
-and Passenger). So the security suffices for local development. An audit
-would be useful before someone put this on a production server.
+SECURITY
+  Although I tried to not do anything dumb this module does execute an
+  external processes via a web service. Obviously security is an issue
+  of concern. Right now I am just using this for local development
+  (when it moves to production it gets a full Apache stack with real PHP
+  and Passenger). So the security suffices for local development. An
+  audit would be useful before someone put this on a production server.
 
-* FULL CGI SUPPORT - I doubt I am fully supporting the CGI interface.
-I have really only tested GET requests (although POST are coming soon).
-There is also dealing with things like file uploads.
+FULL CGI SUPPORT
+  I doubt I am fully supporting the CGI interface. I have just started
+  getting POST support working and I am sure there are other things
+  that are missing.
+
+FULL PHP SUPPORT
+  I have no idea what the implications are for things like safe mode
+  and other PHP items of interest.
 
 But if you can live with all that feel free to use this software and
 send me patches.
