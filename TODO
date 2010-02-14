@@ -5,6 +5,14 @@ BETTER ERROR HANDLING:
   we set the HTTP response code to 500 and return the text "Error". It
   would be nice to provide more information (like the stdout and stderr
   from the program being run).
+PACKAGED LIBRARY
+  This library needs to be packed up as a gem so it can easily be used
+  in a project
+LEGACY SERVER
+  I want to create a executable that is a bit like the test server so
+  if I have a pure PHP (or CGI) project I can just run something like
+  "legacy-rack" and it will start a rack server that service up the
+  current directory.
 
 Ideas for others:
 
