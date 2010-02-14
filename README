@@ -1,39 +1,16 @@
 Released under the MIT License:
 http://www.opensource.org/licenses/mit-license.php
 
+This software is currently ALPHA quality. Use at your own risk.
+
 Rack Legacy tries to provide interaction with legacy environments like
-PHP and CGI while still getting the Rack portability.
+PHP and CGI while still getting the Rack portability so you don't need
+a full Apache stack.
 
-This software is currently ALPHA quality as it is just being used to
-hack on a project that has a mix of Ruby and PHP without having to
-install the entire PHP stack (Apache, mod_php, etc.). With just
-php-cgi installed this middleware will allow the PHP to be executed
-under a simple mongrel server (or whatever your desired flavor).
-
-Specific things that are lacking:
-
-TESTS
-  Tests are a bit lacking now. We have end-to-end functional tests for
-  PHP and some unit tests for CGI. We are currently not testing things
-  like multipart POST (although early testing of form/data post seems
-  to indicate that POSTing in any form should work).
-
-SECURITY
-  Although I tried to not do anything dumb this module does execute an
-  external processes via a web service. Obviously security is an issue
-  of concern. Right now I am just using this for local development
-  (when it moves to production it gets a full Apache stack with real PHP
-  and Passenger). So the security suffices for local development. An
-  audit would be useful before someone put this on a production server.
-
-FULL CGI SUPPORT
-  I doubt I am fully supporting the CGI interface. I have just started
-  getting POST support working and I am sure there are other things
-  that are missing.
-
-FULL PHP SUPPORT
-  I have no idea what the implications are for things like safe mode
-  and other PHP items of interest.
-
-But if you can live with all that feel free to use this software and
-send me patches.
+The PRIMARY use case for this software is for development of an
+application where Ruby is being used but there are also some legacy
+PHP or CGI that is running along-side the Ruby application. This
+middleware allows you to do that development without the full Apache
+stack. When you take the application to a production environment you
+can either leave this middleware in or use a full Apache stack to get
+added performance and security.

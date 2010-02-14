@@ -8,9 +8,9 @@ require 'rack/legacy/cgi'
 class CgiTest < Test::Unit::TestCase
 
   def test_valid?
-    assert app.valid?('success.cgi')
-    assert !app.valid?('../cgi_test.rb')
-    assert !app.valid?('../missing.cgi')
+    assert app.valid?('success.cgi') # Valid file
+    assert !app.valid?('../unit/cgi_test.rb') # Valid file but outside public
+    assert !app.valid?('missing.cgi') # File not found
   end
 
   def test_call
@@ -32,20 +32,25 @@ class CgiTest < Test::Unit::TestCase
     STDERR.reopen(File.for_fd(2))
 
     assert_equal \
-      [200, {"Content-Type"=>"text/html", "Content-Length"=>"1"}, 'query'],
+      [200, {"Content-Type"=>"text/html", "Content-Length"=>"5"}, 'query'],
       app.call({
         'PATH_INFO' => 'param.cgi',
         'QUERY_STRING' => 'q=query',
         'REQUEST_METHOD' => 'GET'
       })
     assert_equal \
-      [200, {"Content-Type"=>"text/html", "Content-Length"=>"1"}, 'post'],
+      [200, {"Content-Type"=>"text/html", "Content-Length"=>"4"}, 'post'],
       app.call({
         'PATH_INFO' => 'param.cgi',
         'REQUEST_METHOD' => 'POST',
         'CONTENT_LENGTH' => '6',
+        'CONTENT_TYPE' => 'application/x-www-form-urlencoded',
         'rack.input' => StringIO.new('q=post')
       })
+
+    # NOTE: Not testing multipart forms (and with files) as the functional
+    # tests will test that and trying to manually encode data would
+    # increase the complexity of the test code more than it was worth.
   end
   
   private

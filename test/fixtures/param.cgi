@@ -4,4 +4,4 @@ $VERBOSE = true
 require 'cgi'
 
 cgi = CGI.new
-cgi.out {cgi.params['q']}
+cgi.out {cgi.params['q'].first}

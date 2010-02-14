@@ -1,0 +1,25 @@
+Things I will probably do:
+
+BETTER ERROR HANDLING:
+  If the application returns an error (i.e. exit status other than 0)
+  we set the HTTP response code to 500 and return the text "Error". It
+  would be nice to provide more information (like the stdout and stderr
+  from the program being run).
+
+Ideas for others:
+
+SECURITY
+  I tried to not do anything dumb but this code isn't audited either.
+  For that reason I recommend this tool be used for only for development
+  purposes and not used in production until someone takes a closer look
+  at security.
+
+PERFORMANCE
+  We could possibly support FastCGI and some sort of mod_php-like
+  interface to allow greater performance. Useful if someone uses this
+  in production. 
+
+CORNER CASES
+  I doubt I am supporting the full CGI spec. I am sure there are corner
+  cases where this software doesn't work. Also I don't know what the
+  implications are for things like php safe mode.
