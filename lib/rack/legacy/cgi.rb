@@ -1,4 +1,6 @@
 require 'fileutils'
+require 'tempfile'
+require 'rack/legacy/error_page'
 
 module Rack
   module Legacy
@@ -44,14 +46,18 @@ module Rack
         headers = {}
         body = ''
 
+        stderr = Tempfile.new 'legacy-rack-stderr'
         IO.popen('-', 'r+') do |io|
           if io.nil?  # Child
+            $stderr.reopen stderr.path
             env.each {|k, v| ENV[k] = v if v.respond_to? :to_str}
             exec path
           else        # Parent
             io.write(env['rack.input'].read) if env['rack.input']
             io.close_write
             Process.wait
+            stderr.rewind
+            stderr = stderr.read
             if $?.exitstatus == 0
               until io.eof? || (line = io.readline.chomp) == ''
                 if line =~ /\s*\:\s*/
@@ -62,8 +68,8 @@ module Rack
               body = io.read
             else
               status = 500
-              headers['Content-Type'] = 'text/plain'
-              body = 'Error'
+              body = ErrorPage.new(env, headers, body, stderr).to_s
+              headers['Content-Type'] = 'text/html'
             end
           end
         end
@@ -71,5 +77,7 @@ module Rack
         [status, headers, body]
       end
     end
+
+
   end
 end

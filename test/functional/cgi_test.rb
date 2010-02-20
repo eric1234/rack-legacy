@@ -18,9 +18,9 @@ class CgiTest < Test::Unit::TestCase
     begin
       WWW::Mechanize.new.get 'http://localhost:4000/error.cgi'
     rescue WWW::Mechanize::ResponseCodeError
-      assert_match /Error/, $!.page.body
+      assert_match /Internal Server Error/, $!.page.body
       assert_equal '500', $!.page.code
-      assert_equal 'text/plain', $!.page.header['content-type']
+      assert_equal 'text/html', $!.page.header['content-type']
     end
   end
 
@@ -28,9 +28,9 @@ class CgiTest < Test::Unit::TestCase
     begin
       WWW::Mechanize.new.get 'http://localhost:4000/syntax_error.cgi'
     rescue WWW::Mechanize::ResponseCodeError
-      assert_match /Error/, $!.page.body
+      assert_match /Internal Server Error/, $!.page.body
       assert_equal '500', $!.page.code
-      assert_equal 'text/plain', $!.page.header['content-type']
+      assert_equal 'text/html', $!.page.header['content-type']
     end
   end
 

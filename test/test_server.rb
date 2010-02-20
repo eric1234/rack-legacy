@@ -9,7 +9,6 @@ require 'rack/legacy/php'
 # Keep webrick quite for functional tests
 class ::WEBrick::HTTPServer; def access_log(config, req, res); end end
 class ::WEBrick::BasicLog; def log(level, data); end end
-STDERR.reopen(File.new('/dev/null'))
 
 app = Rack::Builder.app do
   use Rack::Legacy::Php, File.join(File.dirname(__FILE__), 'fixtures')

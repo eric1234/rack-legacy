@@ -1,10 +1,5 @@
 Things I will probably do:
 
-BETTER ERROR HANDLING:
-  If the application returns an error (i.e. exit status other than 0)
-  we set the HTTP response code to 500 and return the text "Error". It
-  would be nice to provide more information (like the stdout and stderr
-  from the program being run).
 PACKAGED LIBRARY
   This library needs to be packed up as a gem so it can easily be used
   in a project

@@ -19,9 +19,9 @@ class PhpTest < Test::Unit::TestCase
     begin
       WWW::Mechanize.new.get 'http://localhost:4000/error.php'
     rescue WWW::Mechanize::ResponseCodeError
-      assert_match /Error/, $!.page.body
+      assert_match /Internal Server Error/, $!.page.body
       assert_equal '500', $!.page.code
-      assert_equal 'text/plain', $!.page.header['content-type']
+      assert_equal 'text/html', $!.page.header['content-type']
     end
   end
 
@@ -29,9 +29,9 @@ class PhpTest < Test::Unit::TestCase
     begin
       WWW::Mechanize.new.get 'http://localhost:4000/syntax_error.php'
     rescue WWW::Mechanize::ResponseCodeError
-      assert_match /Error/, $!.page.body
+      assert_match /Internal Server Error/, $!.page.body
       assert_equal '500', $!.page.code
-      assert_equal 'text/plain', $!.page.header['content-type']
+      assert_equal 'text/html', $!.page.header['content-type']
     end
   end
 

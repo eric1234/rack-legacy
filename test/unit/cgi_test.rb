@@ -1,7 +1,7 @@
 require 'test/unit'
 
 require 'rubygems'
-require 'httparty'
+require 'flexmock/test_unit'
 
 require 'rack/legacy/cgi'
 
@@ -22,14 +22,15 @@ class CgiTest < Test::Unit::TestCase
       app.call({'PATH_INFO' => 'missing.cgi'})
     assert_equal [200, {}, ''],
       app.call({'PATH_INFO' => 'empty.cgi', 'REQUEST_METHOD' => 'GET'})
-    assert_equal [500, {"Content-Type"=>"text/plain"}, 'Error'],
-      app.call({'PATH_INFO' => 'error.cgi', 'REQUEST_METHOD' => 'GET'})
+    status, headers, body = app.call({'PATH_INFO' => 'error.cgi', 'REQUEST_METHOD' => 'GET'})
+    assert_equal 500, status
+    assert_equal({"Content-Type"=>"text/html"}, headers)
+    assert_match /Internal Server Error/, body      
 
-    # Redirect stderr to keep tests clean
-    STDERR.reopen(File.new('/dev/null'))
-    assert_equal [500, {"Content-Type"=>"text/plain"}, 'Error'],
-      app.call({'PATH_INFO' => 'syntax_error.cgi', 'REQUEST_METHOD' => 'GET'})
-    STDERR.reopen(File.for_fd(2))
+    status, headers, body = app.call({'PATH_INFO' => 'syntax_error.cgi', 'REQUEST_METHOD' => 'GET'})
+    assert_equal 500, status
+    assert_equal({"Content-Type"=>"text/html"}, headers)
+    assert_match /Internal Server Error/, body
 
     assert_equal \
       [200, {"Content-Type"=>"text/html", "Content-Length"=>"5"}, 'query'],
@@ -52,7 +53,17 @@ class CgiTest < Test::Unit::TestCase
     # tests will test that and trying to manually encode data would
     # increase the complexity of the test code more than it was worth.
   end
-  
+
+  # Is the correct parts of the program captured (i.e. STDOUT, STDERR,
+  # headers, etc.) for the purposes of error reporting.
+  def test_error_capture
+    app.call({'PATH_INFO' => 'capture.cgi', 'REQUEST_METHOD' => 'GET'})
+    mock = flexmock Rack::Legacy::ErrorPage
+    mock.should_receive(:new).with(Hash,
+      {'Content-Type' => 'text/html', 'Content-Length' => 12, 'foo' => 'bar'},
+      'Standard Out', 'Standard Error')
+  end
+
   private
 
   def app

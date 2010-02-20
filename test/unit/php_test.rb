@@ -1,8 +1,5 @@
 require 'test/unit'
 
-require 'rubygems'
-require 'httparty'
-
 require 'rack/legacy/php'
 
 class PhpTest < Test::Unit::TestCase
@@ -34,10 +31,15 @@ class PhpTest < Test::Unit::TestCase
     assert_equal 'text/html', response[1]['Content-type']
     assert_match /^PHP/, response[1]['X-Powered-By']
 
-    assert_equal [500, {"Content-Type"=>"text/plain"}, 'Error'],
-      app.call({'PATH_INFO' => 'error.php', 'REQUEST_METHOD' => 'GET'})
-    assert_equal [500, {"Content-Type"=>"text/plain"}, 'Error'],
-      app.call({'PATH_INFO' => 'syntax_error.php', 'REQUEST_METHOD' => 'GET'})
+    status, headers, body = app.call({'PATH_INFO' => 'error.php', 'REQUEST_METHOD' => 'GET'})
+    assert_equal 500, status
+    assert_equal({"Content-Type"=>"text/html"}, headers)
+    assert_match /Internal Server Error/, body
+
+    status, headers, body = app.call({'PATH_INFO' => 'syntax_error.php', 'REQUEST_METHOD' => 'GET'})
+    assert_equal 500, status
+    assert_equal({"Content-Type"=>"text/html"}, headers)
+    assert_match /Internal Server Error/, body      
 
     response = app.call({
       'PATH_INFO' => 'querystring.php',
