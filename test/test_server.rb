@@ -4,6 +4,7 @@
 require 'rubygems'
 require 'webrick'
 require 'rack'
+require 'rack/legacy/cgi'
 require 'rack/legacy/php'
 
 # Keep webrick quite for functional tests

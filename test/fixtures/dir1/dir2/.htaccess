@@ -1,0 +1,4 @@
+php_value include_path backend:ext:.
+php_value auto_prepend_file backend/lib/setup.php
+php_value auto_append_file backend/lib/teardown.php
+php_flag output_buffering off

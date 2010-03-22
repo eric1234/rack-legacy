@@ -63,7 +63,42 @@ class PhpTest < Test::Unit::TestCase
     assert_equal 'text/html', response[1]['Content-type']
     assert_match /^PHP/, response[1]['X-Powered-By']
   end
-  
+
+  def test_parse_htaccess
+    file = File.join(File.dirname(__FILE__), '../fixtures/dir1/dir2/.htaccess')
+    assert_equal({
+      'include_path'      => 'backend:ext:.',
+      'auto_prepend_file' => 'backend/lib/setup.php',
+      'auto_append_file'  => 'backend/lib/teardown.php',
+      'output_buffering'  => 'off',
+    }, Rack::Legacy::Php::HtAccess.new(file).to_hash)
+  end
+
+  def test_htaccess_search
+    file = File.join(File.dirname(__FILE__), '../fixtures/dir1/dir2/test.php')
+    root = File.join(File.dirname(__FILE__), '../fixtures')
+    assert_equal [
+      File.join(File.dirname(__FILE__), '../fixtures/.htaccess'),
+      File.join(File.dirname(__FILE__), '../fixtures/dir1/dir2/.htaccess'),
+    ], Rack::Legacy::Php::HtAccess.find_all(file, root).collect(&:file)
+  end
+
+  def test_merge_all
+    file = File.join(File.dirname(__FILE__), '../fixtures/dir1/dir2/test.php')
+    root = File.join(File.dirname(__FILE__), '../fixtures')
+    assert_equal({
+      'include_path'      => 'backend:ext:.',
+      'auto_prepend_file' => 'backend/lib/setup.php',
+      'auto_append_file'  => 'backend/lib/teardown.php',
+      'output_buffering'  => 'off',
+      'foo'               => 'bar',
+      'baz'               => 'boo',
+    }, Rack::Legacy::Php::HtAccess.merge_all(file, root))
+
+    assert_equal({},
+      Rack::Legacy::Php::HtAccess.merge_all(__FILE__, File.dirname(__FILE__)))
+  end
+
   private
 
   def app

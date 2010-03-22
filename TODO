@@ -1,28 +1,3 @@
-Things I will probably do:
-
 PACKAGED LIBRARY
   This library needs to be packed up as a gem so it can easily be used
   in a project
-LEGACY SERVER
-  I want to create a executable that is a bit like the test server so
-  if I have a pure PHP (or CGI) project I can just run something like
-  "legacy-rack" and it will start a rack server that service up the
-  current directory.
-
-Ideas for others:
-
-SECURITY
-  I tried to not do anything dumb but this code isn't audited either.
-  For that reason I recommend this tool be used for only for development
-  purposes and not used in production until someone takes a closer look
-  at security.
-
-PERFORMANCE
-  We could possibly support FastCGI and some sort of mod_php-like
-  interface to allow greater performance. Useful if someone uses this
-  in production. 
-
-CORNER CASES
-  I doubt I am supporting the full CGI spec. I am sure there are corner
-  cases where this software doesn't work. Also I don't know what the
-  implications are for things like php safe mode.

@@ -1,0 +1,3 @@
+php_value foo bar
+php_value baz boo
+php_flag output_buffering on

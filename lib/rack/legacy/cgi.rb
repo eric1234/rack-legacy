@@ -5,6 +5,7 @@ require 'rack/legacy/error_page'
 module Rack
   module Legacy
     class Cgi
+      attr_reader :public_dir
 
       # Will setup a new instance of the Cgi middleware executing
       # programs located in the given public_dir
@@ -28,8 +29,9 @@ module Rack
       # Check to ensure the path exists and it is a child of the
       # public directory.
       def valid?(path)
-        full_path(path).start_with?(::File.expand_path @public_dir) &&
-        ::File.exist?(full_path(path))
+        fp = full_path path
+        fp.start_with?(::File.expand_path public_dir) &&
+        ::File.exist?(fp) && ::File.executable?(fp)
       end
   
       protected
@@ -37,11 +39,11 @@ module Rack
       # Returns the path with the public_dir pre-pended and with the
       # paths expanded (so we can check for security issues)
       def full_path(path)
-        ::File.expand_path ::File.join(@public_dir, path)
+        ::File.expand_path ::File.join(public_dir, path)
       end
 
       # Will run the given path with the given environment
-      def run(env, path)
+      def run(env, *path)
         status = 200
         headers = {}
         body = ''
@@ -50,8 +52,9 @@ module Rack
         IO.popen('-', 'r+') do |io|
           if io.nil?  # Child
             $stderr.reopen stderr.path
+            ENV['DOCUMENT_ROOT'] = public_dir
             env.each {|k, v| ENV[k] = v if v.respond_to? :to_str}
-            exec path
+            exec *path
           else        # Parent
             io.write(env['rack.input'].read) if env['rack.input']
             io.close_write
@@ -61,13 +64,14 @@ module Rack
             if $?.exitstatus == 0
               until io.eof? || (line = io.readline.chomp) == ''
                 if line =~ /\s*\:\s*/
-                  key, value = line.split /\s*\:\s*/
+                  key, value = line.split(/\s*\:\s*/)
                   headers[key] = value
                 end
               end
               body = io.read
             else
               status = 500
+              body = io.read
               body = ErrorPage.new(env, headers, body, stderr).to_s
               headers['Content-Type'] = 'text/html'
             end

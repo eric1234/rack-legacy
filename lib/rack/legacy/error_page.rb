@@ -72,7 +72,8 @@ module Rack
     <% unless @env.empty? %>
       <h2>Environment</h2>
       <table>
-        <% @env.each do |key, value|
+        <% @env.keys.sort.each do |key|
+          value = @env[key]
           next unless value.respond_to? :to_str %>
           <tr>
             <th><%=h key %></th>
