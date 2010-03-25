@@ -78,7 +78,7 @@ module Rack
           end
         end
   
-        [status, headers, body]
+        [status, headers, [body]]
       end
     end
 

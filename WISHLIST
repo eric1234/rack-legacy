@@ -1,27 +1,43 @@
 Things I will probably not implement but I welcome others to do.
 
-= SECURITY
+== SECURITY
 
 I tried to not do anything dumb but this code isn't audited either.
 For that reason I recommend this tool be used for only for development
 purposes and not used in production until someone takes a closer look
 at security.
 
-= PERFORMANCE
+== PERFORMANCE
 
 We could possibly support FastCGI and some sort of mod_php-like
 interface to allow greater performance. Useful if someone uses this
 in production. 
 
-= CORNER CASES
+== CORNER CASES
 
 I doubt I am supporting the full CGI spec. I am sure there are corner
 cases where this software doesn't work. Also I don't know what the
 implications are for things like php safe mode and other php corner
 cases.
 
-= STANDARD ERROR
+== STANDARD ERROR
 
 Currently I am using a tempfile to capture the standard error from
 the CGI script. This seems a little hackish. Would like to just
 capture the standard error directly.
+
+== RAILS COMPAT
+
+The Rails compatibility hacks are annoying and I would prefer a more
+official solution. The problem is that "./script/server" injects
+Rails::Rack::File prior to the entire Rails app. This I think is done
+to simulate the fact that most webservers serve static resources without
+ever informing Rails they are doing so. So what "./script/server" is
+doing is probably right.
+
+But if we do want to do some pre-processing on a static resource that
+is directly serviceable (like CGI or PHP) there is really no way to do
+it but monkey-patching Rails to ignore files that we will handle.
+
+I hope someone smarter than me can come up with a better solution to
+all of this.
