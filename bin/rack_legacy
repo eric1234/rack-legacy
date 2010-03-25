@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+
+ru = File.join \
+  Gem.source_index.find_name('rack-legacy').last.full_gem_path,
+  'share/rack_legacy.ru'
+ARGV << ru
+exec 'rackup', *ARGV

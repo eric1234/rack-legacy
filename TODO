@@ -1,3 +1,4 @@
-PACKAGED LIBRARY
-  This library needs to be packed up as a gem so it can easily be used
-  in a project
+= PACKAGED LIBRARY
+
+This library needs to be packed up as a gem so it can easily be used
+in a project

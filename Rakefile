@@ -1,4 +1,5 @@
 require 'rake/testtask'
+require 'rake/gempackagetask'
 
 Rake::TestTask.new do |t|
   t.name = 'test:unit'
@@ -34,6 +35,16 @@ END {
     Process.kill 'INT', $server
   end
 }
+
+spec = eval File.read('rack-legacy.gemspec')
+Rake::GemPackageTask.new spec do |pkg|
+  pkg.need_tar = false
+end
+
+desc "Publish gem to rubygems.org"
+task :publish do
+  `gem push pkg/#{spec.name}-#{spec.version}.gem`
+end
 
 desc "Run all tests"
 task :test => ['test:unit', 'test:functional']
