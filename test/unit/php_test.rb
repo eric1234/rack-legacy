@@ -17,7 +17,7 @@ class PhpTest < Test::Unit::TestCase
   def test_call
     response = app.call 'PATH_INFO' => 'success.php', 'REQUEST_METHOD' => 'GET'
     assert_equal 200, response.first
-    assert_equal 'Success', response.last
+    assert_equal ['Success'], response.last
     assert_equal 'text/html', response[1]['Content-type']
     assert_not_nil response[1]['X-Powered-By']
 
@@ -27,19 +27,19 @@ class PhpTest < Test::Unit::TestCase
 
     response = app.call 'PATH_INFO' => 'empty.php', 'REQUEST_METHOD' => 'GET'
     assert_equal 200, response.first
-    assert_equal '', response.last
+    assert_equal [''], response.last
     assert_equal 'text/html', response[1]['Content-type']
     assert_match /^PHP/, response[1]['X-Powered-By']
 
     status, headers, body = app.call({'PATH_INFO' => 'error.php', 'REQUEST_METHOD' => 'GET'})
     assert_equal 500, status
     assert_equal({"Content-Type"=>"text/html"}, headers)
-    assert_match /Internal Server Error/, body
+    assert_match /Internal Server Error/, body.first
 
     status, headers, body = app.call({'PATH_INFO' => 'syntax_error.php', 'REQUEST_METHOD' => 'GET'})
     assert_equal 500, status
     assert_equal({"Content-Type"=>"text/html"}, headers)
-    assert_match /Internal Server Error/, body      
+    assert_match /Internal Server Error/, body.first
 
     response = app.call({
       'PATH_INFO' => 'querystring.php',
@@ -47,7 +47,7 @@ class PhpTest < Test::Unit::TestCase
       'REQUEST_METHOD' => 'GET'
     })
     assert_equal 200, response.first
-    assert_equal 'query', response.last
+    assert_equal ['query'], response.last
     assert_equal 'text/html', response[1]['Content-type']
     assert_match /^PHP/, response[1]['X-Powered-By']
 
@@ -59,7 +59,7 @@ class PhpTest < Test::Unit::TestCase
       'rack.input' => StringIO.new('q=post')
     })
     assert_equal 200, response.first
-    assert_equal 'post', response.last
+    assert_equal ['post'], response.last
     assert_equal 'text/html', response[1]['Content-type']
     assert_match /^PHP/, response[1]['X-Powered-By']
   end

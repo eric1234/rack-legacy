@@ -15,32 +15,32 @@ class CgiTest < Test::Unit::TestCase
 
   def test_call
     assert_equal \
-      [200, {"Content-Type"=>"text/html", "Content-Length"=>"7"}, 'Success'],
+      [200, {"Content-Type"=>"text/html", "Content-Length"=>"7"}, ['Success']],
       app.call({'PATH_INFO' => 'success.cgi', 'REQUEST_METHOD' => 'GET'})
     assert_equal \
       [200, {"Content-Type"=>"text/html"}, 'Endpoint'],
       app.call({'PATH_INFO' => 'missing.cgi'})
-    assert_equal [200, {}, ''],
+    assert_equal [200, {}, ['']],
       app.call({'PATH_INFO' => 'empty.cgi', 'REQUEST_METHOD' => 'GET'})
     status, headers, body = app.call({'PATH_INFO' => 'error.cgi', 'REQUEST_METHOD' => 'GET'})
     assert_equal 500, status
     assert_equal({"Content-Type"=>"text/html"}, headers)
-    assert_match /Internal Server Error/, body      
+    assert_match /Internal Server Error/, body.first      
 
     status, headers, body = app.call({'PATH_INFO' => 'syntax_error.cgi', 'REQUEST_METHOD' => 'GET'})
     assert_equal 500, status
     assert_equal({"Content-Type"=>"text/html"}, headers)
-    assert_match /Internal Server Error/, body
+    assert_match /Internal Server Error/, body.first
 
     assert_equal \
-      [200, {"Content-Type"=>"text/html", "Content-Length"=>"5"}, 'query'],
+      [200, {"Content-Type"=>"text/html", "Content-Length"=>"5"}, ['query']],
       app.call({
         'PATH_INFO' => 'param.cgi',
         'QUERY_STRING' => 'q=query',
         'REQUEST_METHOD' => 'GET'
       })
     assert_equal \
-      [200, {"Content-Type"=>"text/html", "Content-Length"=>"4"}, 'post'],
+      [200, {"Content-Type"=>"text/html", "Content-Length"=>"4"}, ['post']],
       app.call({
         'PATH_INFO' => 'param.cgi',
         'REQUEST_METHOD' => 'POST',
