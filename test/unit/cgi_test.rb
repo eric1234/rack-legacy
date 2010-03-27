@@ -11,6 +11,7 @@ class CgiTest < Test::Unit::TestCase
     assert app.valid?('success.cgi') # Valid file
     assert !app.valid?('../unit/cgi_test.rb') # Valid file but outside public
     assert !app.valid?('missing.cgi') # File not found
+    assert !app.valid?('./') # Directory
   end
 
   def test_call

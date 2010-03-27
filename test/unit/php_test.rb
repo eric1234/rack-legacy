@@ -9,6 +9,7 @@ class PhpTest < Test::Unit::TestCase
     assert app.valid?('success.php') # Valid file
     assert !app.valid?('../unit/php_test.rb') # Valid file but outside public
     assert !app.valid?('missing.php') # File not found
+    assert !app.valid?('../fixtures/invalid.php') # Directory
 
     # Some new tests that are specific to php
     assert !app.valid?('success.cgi') # Valid file but not a php file

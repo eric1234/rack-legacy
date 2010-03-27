@@ -18,7 +18,7 @@ module Rack
       def valid?(path)
         fp = full_path path
         [/php$/, /php?\d$/].any? {|ext| ::File.extname(fp) =~ ext} &&
-        fp.start_with?(::File.expand_path @public_dir) && ::File.exist?(fp)
+        fp.start_with?(::File.expand_path @public_dir) && ::File.file?(fp)
       end
 
       # Monkeys with the arguments so that it actually runs PHP's cgi

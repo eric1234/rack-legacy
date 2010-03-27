@@ -31,7 +31,7 @@ module Rack
       def valid?(path)
         fp = full_path path
         fp.start_with?(::File.expand_path public_dir) &&
-        ::File.exist?(fp) && ::File.executable?(fp)
+        ::File.file?(fp) && ::File.executable?(fp)
       end
   
       protected
