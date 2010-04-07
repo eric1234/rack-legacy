@@ -58,22 +58,20 @@ module Rack
           else        # Parent
             io.write(env['rack.input'].read) if env['rack.input']
             io.close_write
-            Process.wait
+            until io.eof? || (line = io.readline.chomp) == ''
+              if line =~ /\s*\:\s*/
+                key, value = line.split(/\s*\:\s*/)
+                headers[key] = value
+              end
+            end
+            body = io.read
             stderr.rewind
             stderr = stderr.read
-            if $?.exitstatus == 0
-              until io.eof? || (line = io.readline.chomp) == ''
-                if line =~ /\s*\:\s*/
-                  key, value = line.split(/\s*\:\s*/)
-                  headers[key] = value
-                end
-              end
-              body = io.read
-            else
+            Process.wait
+            unless $?.exitstatus == 0
               status = 500
-              body = io.read
               body = ErrorPage.new(env, headers, body, stderr).to_s
-              headers['Content-Type'] = 'text/html'
+              headers = {'Content-Type' => 'text/html'}
             end
           end
         end
