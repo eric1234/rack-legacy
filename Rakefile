@@ -42,7 +42,7 @@ Rake::GemPackageTask.new spec do |pkg|
 end
 
 desc "Publish gem to rubygems.org"
-task :publish do
+task :publish => :package do
   `gem push pkg/#{spec.name}-#{spec.version}.gem`
 end
 
