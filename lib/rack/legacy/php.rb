@@ -25,6 +25,7 @@ module Rack
       # program with the path as an argument to that program.
       def run(env, path)
         config = HtAccess.merge_all(path, public_dir)
+        config['cgi.force_redirect'] = 0
         config = config.collect {|(key, value)| "#{key}=#{value}"}
         config.collect! {|kv| ['-d', kv]} 
 
