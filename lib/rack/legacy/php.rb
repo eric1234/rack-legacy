@@ -24,10 +24,10 @@ module Rack
       # Monkeys with the arguments so that it actually runs PHP's cgi
       # program with the path as an argument to that program.
       def run(env, path)
-        config = HtAccess.merge_all(path, public_dir)
-        config['cgi.force_redirect'] = 0
+        config = {'cgi.force_redirect' => 0}
+        config.merge! HtAccess.merge_all(path, public_dir) if @htaccess_enabled
         config = config.collect {|(key, value)| "#{key}=#{value}"}
-        config.collect! {|kv| ['-d', kv]} 
+        config.collect! {|kv| ['-d', kv]}
 
         env['SCRIPT_FILENAME'] = path
         super env, @php_exe, *config.flatten
