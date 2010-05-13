@@ -1,0 +1,14 @@
+Polish Tests Up
+---------------
+Last few commits have not included tests. Need to polish that up.
+Specially we need to:
+
+* Rails compat doesn't really have any testing. Considering this is
+  highly breakable between versions it would be good to have a way
+  to automatically test this.
+* If a document needed to flush our library used to block. Refactored
+  code that collects response but need to write tests to verify this.
+* We are not testing the htaccess processing flag
+* We are not testing cases where the app returns a status other than 200
+  although our code now does carry this on to rack and removes the
+  header.

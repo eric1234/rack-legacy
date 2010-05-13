@@ -75,7 +75,8 @@ module Rack
             end
           end
         end
-  
+
+        status = headers.delete('Status').to_i if headers.has_key? 'Status'
         [status, headers, [body]]
       end
     end
