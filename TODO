@@ -12,3 +12,5 @@ Specially we need to:
 * We are not testing cases where the app returns a status other than 200
   although our code now does carry this on to rack and removes the
   header.
+* If multiple of the same header (i.e. Set-Cookie) make sure all are
+  sent back to the client.
