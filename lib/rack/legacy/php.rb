@@ -14,11 +14,13 @@ module Rack
         @htaccess_enabled = htaccess_enabled
       end
 
-      # Adds extension checking in addition to checks in superclass.
+      # Override to check for php extension. Still checks if
+      # file is in public path and it is a file like superclass.
       def valid?(path)
         fp = full_path path
-        [/php$/, /php?\d$/].any? {|ext| ::File.extname(fp) =~ ext} &&
-        fp.start_with?(::File.expand_path @public_dir) && ::File.file?(fp)
+        return false unless fp =~ /\.php/ # Must have php extension somewhere
+        sp = script_path fp
+        sp.start_with?(::File.expand_path @public_dir) && ::File.file?(sp)
       end
 
       # Monkeys with the arguments so that it actually runs PHP's cgi
@@ -29,8 +31,20 @@ module Rack
         config = config.collect {|(key, value)| "#{key}=#{value}"}
         config.collect! {|kv| ['-d', kv]}
 
-        env['SCRIPT_FILENAME'] = path
+        env['SCRIPT_FILENAME'] = script_path(path)
+        env['SCRIPT_NAME'] = script_path(path).sub ::File.expand_path(public_dir), ''
         super env, @php_exe, *config.flatten
+      end
+
+      private
+
+      # Given a full path will extract just the script part. So
+      #
+      #   /index.php/foo/bar
+      #
+      # will return /index.php
+      def script_path(path)
+        path.split('.php').first + '.php'
       end
 
       # For processing .htaccess files to tweak PHP environment.

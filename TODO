@@ -11,3 +11,4 @@ Specially we need to:
   header.
 * If multiple of the same header (i.e. Set-Cookie) make sure all are
   sent back to the client.
+* Fix to allow /index.php/foo/bar
