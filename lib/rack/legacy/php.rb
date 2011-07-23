@@ -33,6 +33,9 @@ module Rack
 
         env['SCRIPT_FILENAME'] = script_path(path)
         env['SCRIPT_NAME'] = script_path(path).sub ::File.expand_path(public_dir), ''
+        env['PATH_INFO'] = info_path(path)
+        env['REQUEST_URI'] = path.sub ::File.expand_path(public_dir), ''
+        env['REQUEST_URI'] += '?' + env['QUERY_STRING'] unless env['QUERY_STRING'].empty?
         super env, @php_exe, *config.flatten
       end
 
@@ -45,6 +48,19 @@ module Rack
       # will return /index.php
       def script_path(path)
         path.split('.php').first + '.php'
+      end
+
+      # Given a full path will extract just the info part. So
+      #
+      #   /index.php/foo/bar
+      #
+      # will return /foo/bar, but
+      #
+      #   /index.php
+      #
+      # will return an empty string.
+      def info_path(path)
+        path.split('.php', 2)[1].to_s
       end
 
       # For processing .htaccess files to tweak PHP environment.
