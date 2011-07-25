@@ -53,6 +53,7 @@ module Rack
           if io.nil?  # Child
             $stderr.reopen stderr.path
             ENV['DOCUMENT_ROOT'] = public_dir
+            ENV['SERVER_SOFTWARE'] = 'Rack Legacy'
             env.each {|k, v| ENV[k] = v if v.respond_to? :to_str}
             exec *path
           else        # Parent
