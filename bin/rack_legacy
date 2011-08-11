@@ -3,7 +3,7 @@
 require 'rubygems'
 
 ru = File.join \
-  Gem.source_index.find_name('rack-legacy').last.full_gem_path,
+  Gem::Specification.find_by_name('rack-legacy').full_gem_path,
   'share/rack_legacy.ru'
 ARGV << ru
 exec 'rackup', *ARGV
