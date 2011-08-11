@@ -1,5 +1,5 @@
 require 'rake/testtask'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 
 Rake::TestTask.new do |t|
   t.name = 'test:unit'
@@ -32,12 +32,12 @@ end
 END {
   if $server
     puts 'Shutting down test server...'
-    Process.kill 'INT', $server
+    Process.kill 'KILL', $server
   end
 }
 
 spec = eval File.read('rack-legacy.gemspec')
-Rake::GemPackageTask.new spec do |pkg|
+Gem::PackageTask.new spec do |pkg|
   pkg.need_tar = false
 end
 
