@@ -26,24 +26,6 @@ Currently I am using a tempfile to capture the standard error from
 the CGI script. This seems a little hackish. Would like to just
 capture the standard error directly.
 
-== Rails Compatibility Hacks
-
-The Rails compatibility hacks are annoying and I would prefer a more
-official solution. The problem is that "./script/server" injects
-Rails::Rack::File prior to the entire Rails app. This I think is done
-to simulate the fact that most webservers serve static resources without
-ever informing Rails they are doing so. So what "./script/server" is
-doing is probably right.
-
-But if we do want to do some pre-processing on a static resource that
-is directly serviceable (like CGI or PHP) there is really no way to do
-it but monkey-patching Rails to ignore files that we will handle.
-
-I hope someone smarter than me can come up with a better solution to
-all of this.
-
 == Forward Thinking
 
-We had to do some special work to make it work well with Rails. Don't
-know if this hackery will break in Rails 3.x but need to test. Also
-this is untested in a Ruby 1.9 environment.
+This code is un-tested in Ruby 1.9
