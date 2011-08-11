@@ -42,6 +42,19 @@ class PhpTest < Test::Unit::TestCase
     assert_equal 'text/html', response.header['content-type']
   end
 
+  def test_with_status
+    assert_raises WWW::Mechanize::ResponseCodeError do
+      WWW::Mechanize.new.get 'http://localhost:4000/404.php'
+    end
+  end
+
+  def test_multiple_headers
+    response = WWW::Mechanize.new.get 'http://localhost:4000/dup_headers.php'
+    assert_equal '200', response.code
+    assert_equal 'cookie1=, cookie2=', response.header['set-cookie']
+    assert_equal 'text/html', response.header['content-type']
+  end
+
   def test_querystring
     response = WWW::Mechanize.new.get 'http://localhost:4000/querystring.php', :q => 'query'
     assert_match 'query', response.body
@@ -54,6 +67,17 @@ class PhpTest < Test::Unit::TestCase
     assert_match 'post', response.body
     assert_equal '200', response.code
     assert_equal 'text/html', response.header['content-type']
+  end
+
+  def test_flushing
+    assert_nothing_raised do
+      # 5 seconds should be enough to know it didn't lock up
+      timeout 5 do
+        response = WWW::Mechanize.new.get 'http://localhost:4000/flush.php'
+        assert_equal '200', response.code
+        assert_equal 'text/html', response.header['content-type']
+      end
+    end
   end
 
   def test_file_upload

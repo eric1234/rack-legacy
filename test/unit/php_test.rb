@@ -65,6 +65,21 @@ class PhpTest < Test::Unit::TestCase
     assert_match /^PHP/, response[1]['X-Powered-By']
   end
 
+  def test_environment
+    status, headers, body = *app.call({
+      'PATH_INFO' => 'env.php/foo',
+      'QUERY_STRING' => 'bar=baz',
+      'REQUEST_METHOD' => 'GET',
+    })
+    env = Hash[body[0].scan(/\[([^\]]+)\]\s+=>\s+(.+)/)]
+    assert File.join(File.dirname(__FILE__), '../fixtures'), env['DOCUMENT_ROOT']
+    assert File.join(File.dirname(__FILE__), '../fixtures', 'env.php'), env['SCRIPT_FILENAME']
+    assert 'env.php', env['SCRIPT_NAME']
+    assert '/foo', env['PATH_INFO']
+    assert 'env.php/foo?bar=baz', env['REQUEST_URI']
+    assert 'Rack Legacy', env['SERVER_SOFTWARE']
+  end
+
   def test_parse_htaccess
     file = File.join(File.dirname(__FILE__), '../fixtures/dir1/dir2/.htaccess')
     assert_equal({
@@ -98,6 +113,17 @@ class PhpTest < Test::Unit::TestCase
 
     assert_equal({},
       Rack::Legacy::Php::HtAccess.merge_all(__FILE__, File.dirname(__FILE__)))
+  end
+
+  def test_htaccess_flag
+    status, headers, body = *app.call({'PATH_INFO' => 'ini.php'})
+    assert_equal '1', body[0]
+
+    app = Rack::Legacy::Php.new \
+      proc {[200, {'Content-Type' => 'text/html'}, 'Endpoint']},
+      File.join(File.dirname(__FILE__), '../fixtures'), 'php-cgi', false
+    status, headers, body = *app.call({'PATH_INFO' => 'ini.php'})
+    assert_equal '4096', body[0]
   end
 
   private

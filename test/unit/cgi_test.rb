@@ -23,6 +23,10 @@ class CgiTest < Test::Unit::TestCase
       app.call({'PATH_INFO' => 'missing.cgi'})
     assert_equal [200, {}, ['']],
       app.call({'PATH_INFO' => 'empty.cgi', 'REQUEST_METHOD' => 'GET'})
+    assert_equal [404, {"Content-Type"=>"text/html"}, ['']],
+      app.call({'PATH_INFO' => '404.cgi', 'REQUEST_METHOD' => 'GET'})
+    assert_equal [200, {"Content-Type"=>"text/html", 'Set-Cookie' => "cookie1\ncookie2"}, ['']],
+      app.call({'PATH_INFO' => 'dup_headers.cgi', 'REQUEST_METHOD' => 'GET'})
     status, headers, body = app.call({'PATH_INFO' => 'error.cgi', 'REQUEST_METHOD' => 'GET'})
     assert_equal 500, status
     assert_equal({"Content-Type"=>"text/html"}, headers)
@@ -63,6 +67,13 @@ class CgiTest < Test::Unit::TestCase
     mock.should_receive(:new).with(Hash,
       {'Content-Type' => 'text/html', 'Content-Length' => 12, 'foo' => 'bar'},
       'Standard Out', 'Standard Error')
+  end
+
+  def test_environment
+    status, headers, body = *app.call({'PATH_INFO' => 'env.cgi', 'REQUEST_METHOD' => 'GET'})
+    env = eval(body[0])
+    assert File.join(File.dirname(__FILE__), '../fixtures'), env['DOCUMENT_ROOT']
+    assert 'Rack Legacy', env['SERVER_SOFTWARE']
   end
 
   private
