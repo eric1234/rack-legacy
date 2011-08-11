@@ -19,7 +19,7 @@ module Rack
       def valid?(path)
         fp = full_path path
         return false unless fp =~ /\.php/ # Must have php extension somewhere
-        sp = script_path fp
+        sp = path_parts(fp)[0]
         sp.start_with?(::File.expand_path @public_dir) && ::File.file?(sp)
       end
 
@@ -31,23 +31,29 @@ module Rack
         config = config.collect {|(key, value)| "#{key}=#{value}"}
         config.collect! {|kv| ['-d', kv]}
 
-        env['SCRIPT_FILENAME'] = script_path(path)
-        env['SCRIPT_NAME'] = script_path(path).sub ::File.expand_path(public_dir), ''
-        env['PATH_INFO'] = info_path(path)
-        env['REQUEST_URI'] = path.sub ::File.expand_path(public_dir), ''
-        env['REQUEST_URI'] += '?' + env['QUERY_STRING'] unless env['QUERY_STRING'].empty?
+        script, info = *path_parts(path)
+        env['SCRIPT_FILENAME'] = script
+        env['SCRIPT_NAME'] = strip_public script
+        env['PATH_INFO'] = info
+        env['REQUEST_URI'] = strip_public path
+        env['REQUEST_URI'] += '?' + env['QUERY_STRING'] if
+          env.has_key?('QUERY_STRING') && !env['QUERY_STRING'].empty?
         super env, @php_exe, *config.flatten
       end
 
       private
 
-      # Given a full path will extract just the script part. So
-      #
-      #   /index.php/foo/bar
-      #
-      # will return /index.php
-      def script_path(path)
-        path.split('.php').first + '.php'
+      def strip_public(path)
+        path.sub ::File.expand_path(public_dir), ''
+      end
+
+      # Given a full path will separate the script part from the
+      # path_info part. Returns an array. The first element is the
+      # script. The second element is the path info.
+      def path_parts(path)
+        script, info = *path.split('.php', 2)
+        script += '.php'
+        [script, info]
       end
 
       # Given a full path will extract just the info part. So
