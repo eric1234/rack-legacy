@@ -93,6 +93,8 @@ TEMPLATE
     
       def h(s)
         s.to_s.gsub(/&/, "&amp;").gsub(/\"/, "&quot;").gsub(/>/, "&gt;").gsub(/</, "&lt;")
+      rescue ArgumentError => e
+        s.force_encoding('UTF-8') and retry if e.message == "invalid byte sequence in US-ASCII"
       end
     
     end
