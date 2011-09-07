@@ -90,8 +90,8 @@ TEMPLATE
     
       private
     
-      def h(escape)
-        CGI::escapeHTML escape
+      def h(s)
+        s.to_s.gsub(/&/, "&amp;").gsub(/\"/, "&quot;").gsub(/>/, "&gt;").gsub(/</, "&lt;")
       end
     
     end
