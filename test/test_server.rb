@@ -7,7 +7,7 @@ require 'rack'
 require 'rack/legacy/cgi'
 require 'rack/legacy/php'
 
-# Keep webrick quite for functional tests
+# Keep WEBrick quiet for functional tests
 class ::WEBrick::HTTPServer; def access_log(config, req, res); end end
 class ::WEBrick::BasicLog; def log(level, data); end end
 
