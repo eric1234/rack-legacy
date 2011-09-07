@@ -20,7 +20,7 @@ class CgiTest < Test::Unit::TestCase
     rescue Mechanize::ResponseCodeError
       assert_match /Internal Server Error/, $!.page.body
       assert_equal '500', $!.page.code
-      assert_equal 'text/html', $!.page.header['content-type']
+      assert_match /^text\/html/, $!.page.header['content-type']
     end
   end
 
@@ -30,7 +30,7 @@ class CgiTest < Test::Unit::TestCase
     rescue Mechanize::ResponseCodeError
       assert_match /Internal Server Error/, $!.page.body
       assert_equal '500', $!.page.code
-      assert_equal 'text/html', $!.page.header['content-type']
+      assert_match /^text\/html/, $!.page.header['content-type']
     end
   end
 

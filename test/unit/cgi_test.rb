@@ -29,12 +29,12 @@ class CgiTest < Test::Unit::TestCase
       app.call({'PATH_INFO' => 'dup_headers.cgi', 'REQUEST_METHOD' => 'GET'})
     status, headers, body = app.call({'PATH_INFO' => 'error.cgi', 'REQUEST_METHOD' => 'GET'})
     assert_equal 500, status
-    assert_equal({"Content-Type"=>"text/html"}, headers)
+    assert_match /^text\/html/, headers["Content-Type"]
     assert_match /Internal Server Error/, body.first      
 
     status, headers, body = app.call({'PATH_INFO' => 'syntax_error.cgi', 'REQUEST_METHOD' => 'GET'})
     assert_equal 500, status
-    assert_equal({"Content-Type"=>"text/html"}, headers)
+    assert_match /^text\/html/, headers["Content-Type"]
     assert_match /Internal Server Error/, body.first
 
     assert_equal \
