@@ -34,12 +34,12 @@ class PhpTest < Test::Unit::TestCase
 
     status, headers, body = app.call({'PATH_INFO' => 'error.php', 'REQUEST_METHOD' => 'GET'})
     assert_equal 500, status
-    assert_match /^text\/html/, headers["Content-Type"]
+    assert_equal({"Content-Type"=>"text/html"}, headers)
     assert_match /Internal Server Error/, body.first
 
     status, headers, body = app.call({'PATH_INFO' => 'syntax_error.php', 'REQUEST_METHOD' => 'GET'})
     assert_equal 500, status
-    assert_match /^text\/html/, headers["Content-Type"]
+    assert_equal({"Content-Type"=>"text/html"}, headers)
     assert_match /Internal Server Error/, body.first
 
     response = app.call({

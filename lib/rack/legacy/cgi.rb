@@ -76,7 +76,7 @@ module Rack
             unless $?.exitstatus == 0
               status = 500
               body = ErrorPage.new(env, headers, body, stderr).to_s
-              headers = {'Content-Type' => 'text/html; charset=utf-8'}
+              headers = {'Content-Type' => 'text/html'}
             end
           end
         end

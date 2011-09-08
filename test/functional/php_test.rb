@@ -1,4 +1,3 @@
-# encoding: UTF-8
 require 'test/unit'
 
 require 'rubygems'
@@ -22,7 +21,7 @@ class PhpTest < Test::Unit::TestCase
     rescue Mechanize::ResponseCodeError
       assert_match /Internal Server Error/, $!.page.body
       assert_equal '500', $!.page.code
-      assert_match /^text\/html/, $!.page.header['content-type']
+      assert_equal 'text/html', $!.page.header['content-type']
     end
   end
 
@@ -32,19 +31,7 @@ class PhpTest < Test::Unit::TestCase
     rescue Mechanize::ResponseCodeError
       assert_match /Internal Server Error/, $!.page.body
       assert_equal '500', $!.page.code
-      assert_match /^text\/html/, $!.page.header['content-type']
-    end
-  end
-
-  def test_non_ascii_error
-    begin
-      Mechanize.new.get 'http://localhost:4000/non_ascii_error.php'
-    rescue Mechanize::ResponseCodeError
-      assert_match /Internal Server Error/, $!.page.body
-      assert_not_match /invalid byte sequence/, $!.page.body
-      $!.page.body.force_encoding('UTF-8') # Revert ASCII-8BIT encoding forced by Mechanize
-      assert_match /エラー/, $!.page.body
-      assert_equal '500', $!.page.code
+      assert_equal 'text/html', $!.page.header['content-type']
     end
   end
 
