@@ -91,9 +91,18 @@ TEMPLATE
       private
     
       def h(s)
-        s.to_s.gsub(/&/, "&amp;").gsub(/\"/, "&quot;").gsub(/>/, "&gt;").gsub(/</, "&lt;")
+        s.to_s \
+          # Encode unsafe HTML characters
+          .gsub(/&/, "&amp;").gsub(/\"/, "&quot;").gsub(/>/, "&gt;").gsub(/</, "&lt;") \
+          # Use HTML entities for non-ASCII characters
+          .unpack("U*").collect { |s| s > 127 ? "&##{s};" : s.chr }.join("")
       rescue ArgumentError => e
-        s.force_encoding('UTF-8') and retry if e.message == "invalid byte sequence in US-ASCII"
+        case e.message
+          when "invalid byte sequence in US-ASCII" then
+            # Assume UTF-8 string
+            s.force_encoding('UTF-8') and retry
+        end
+        raise e
       end
     
     end
