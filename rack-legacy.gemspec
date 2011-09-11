@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'rack'
   s.add_development_dependency 'flexmock'
   s.add_development_dependency 'nokogiri'
-  s.add_development_dependency 'mechanize'
+  s.add_development_dependency 'mechanize', '>= 2.0'
   s.files = Dir['lib/**/*.rb'] + Dir['bin/*'] + Dir['share/*']
   s.has_rdoc = true
   s.extra_rdoc_files << 'README' << 'WISHLIST'
