@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'rack-legacy'
-  s.version = '0.3.0'
+  s.version = '0.3.1'
   s.homepage = 'http://wiki.github.com/eric1234/rack-legacy/'
   s.author = 'Eric Anderson'
   s.email = 'eric@pixelwareinc.com'
