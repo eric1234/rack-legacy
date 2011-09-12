@@ -40,7 +40,7 @@ class PhpTest < Test::Unit::TestCase
       Mechanize.new.get 'http://localhost:4000/non_ascii_error.php'
     rescue Mechanize::ResponseCodeError
       assert_match /Internal Server Error/, $!.page.body
-      assert_not_match /invalid byte sequence/, $!.page.body
+      assert_no_match /invalid byte sequence/, $!.page.body
       assert_match /&#12456;&#12521;&#12540;/, $!.page.body
       assert_equal '500', $!.page.code
     end

@@ -91,11 +91,11 @@ TEMPLATE
       private
     
       def h(s)
-        s.to_s \
+        s.to_s.
           # Encode unsafe HTML characters
-          .gsub(/&/, "&amp;").gsub(/\"/, "&quot;").gsub(/>/, "&gt;").gsub(/</, "&lt;") \
+          gsub(/&/, "&amp;").gsub(/\"/, "&quot;").gsub(/>/, "&gt;").gsub(/</, "&lt;").
           # Use HTML entities for non-ASCII characters
-          .unpack("U*").collect { |s| s > 127 ? "&##{s};" : s.chr }.join("")
+          unpack("U*").collect { |s| s > 127 ? "&##{s};" : s.chr }.join("")
       rescue ArgumentError => e
         case e.message
           when "invalid byte sequence in US-ASCII" then
