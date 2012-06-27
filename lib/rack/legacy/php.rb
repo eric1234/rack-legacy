@@ -14,6 +14,17 @@ module Rack
         @htaccess_enabled = htaccess_enabled
       end
 
+      # Override so that calls to the directory go to index.php
+      def call(env)
+        path = env['PATH_INFO']
+        path = "/" if path == ""
+        path = ::File.join path, 'index.php' if
+          path =~ /\/$/ || ::File.directory?(full_path(path))
+        env['PATH_INFO'] = path
+
+        super env
+      end
+
       # Override to check for php extension. Still checks if
       # file is in public path and it is a file like superclass.
       def valid?(path)

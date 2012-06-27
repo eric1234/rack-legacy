@@ -26,6 +26,24 @@ class PhpTest < Test::Unit::TestCase
       [200, {"Content-Type"=>"text/html"}, 'Endpoint'],
       app.call({'PATH_INFO' => 'missing.php'})
 
+    response = app.call 'PATH_INFO' => '', 'REQUEST_METHOD' => 'GET'
+    assert_equal 200, response.first
+    assert_equal ['default'], response.last
+    assert_equal 'text/html', response[1]['Content-type']
+    assert_match /^PHP/, response[1]['X-Powered-By']
+
+    response = app.call 'PATH_INFO' => '/', 'REQUEST_METHOD' => 'GET'
+    assert_equal 200, response.first
+    assert_equal ['default'], response.last
+    assert_equal 'text/html', response[1]['Content-type']
+    assert_match /^PHP/, response[1]['X-Powered-By']
+
+    response = app.call 'PATH_INFO' => '/dir1', 'REQUEST_METHOD' => 'GET'
+    assert_equal 200, response.first
+    assert_equal ['default directory'], response.last
+    assert_equal 'text/html', response[1]['Content-type']
+    assert_match /^PHP/, response[1]['X-Powered-By']
+
     response = app.call 'PATH_INFO' => 'empty.php', 'REQUEST_METHOD' => 'GET'
     assert_equal 200, response.first
     assert_equal [''], response.last
