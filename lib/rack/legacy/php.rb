@@ -14,24 +14,18 @@ module Rack
         @htaccess_enabled = htaccess_enabled
       end
 
-      # Override so that calls to the directory go to index.php
-      def call(env)
-        path = env['PATH_INFO']
-        path = "/" if path == ""
-        path = ::File.join path, 'index.php' if
-          path =~ /\/$/ || ::File.directory?(full_path(path))
-        env['PATH_INFO'] = path
-
-        super env
-      end
-
       # Override to check for php extension. Still checks if
       # file is in public path and it is a file like superclass.
       def valid?(path)
-        fp = full_path path
-        return false unless fp =~ /\.php/ # Must have php extension somewhere
-        sp = path_parts(fp)[0]
-        sp.start_with?(::File.expand_path @public_dir) && ::File.file?(sp)
+        sp = path_parts(full_path path)[0]
+
+        # Must have a php extension or be a directory
+        return false unless
+          (::File.file?(sp) && sp =~ /\.php$/) ||
+          ::File.directory?(sp)
+
+        # Must be in public directory for security
+        sp.start_with? ::File.expand_path(@public_dir)
       end
 
       # Monkeys with the arguments so that it actually runs PHP's cgi
@@ -43,6 +37,7 @@ module Rack
         config.collect! {|kv| ['-d', kv]}
 
         script, info = *path_parts(path)
+        script = ::File.join script, 'index.php' if ::File.directory? script
         env['SCRIPT_FILENAME'] = script
         env['SCRIPT_NAME'] = strip_public script
         env['PATH_INFO'] = info
@@ -62,6 +57,7 @@ module Rack
       # path_info part. Returns an array. The first element is the
       # script. The second element is the path info.
       def path_parts(path)
+        return [path, nil] unless path =~ /.php/
         script, info = *path.split('.php', 2)
         script += '.php'
         [script, info]
