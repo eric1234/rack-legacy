@@ -37,7 +37,12 @@ module Rack
         config.collect! {|kv| ['-d', kv]}
 
         script, info = *path_parts(path)
-        script = ::File.join script, 'index.php' if ::File.directory? script
+        if ::File.directory? script
+          # If directory then assume index.php
+          script = ::File.join script, 'index.php';
+          # Ensure it ends in / which some PHP scripts depend on
+          path = "#{path}/" unless path =~ /\/$/
+        end
         env['SCRIPT_FILENAME'] = script
         env['SCRIPT_NAME'] = strip_public script
         env['PATH_INFO'] = info
