@@ -97,10 +97,10 @@ TEMPLATE
           # Use HTML entities for non-ASCII characters
           unpack("U*").collect { |s| s > 127 ? "&##{s};" : s.chr }.join("")
       rescue ArgumentError => e
-        case e.message
-          when "invalid byte sequence in US-ASCII" then
-            # Assume UTF-8 string
-            s.force_encoding('UTF-8') and retry
+        if e.message =~ /invalid byte sequence/
+          # Get rid of incorrectly encoded characters
+          s = s.chars.collect { |c| c.valid_encoding? ? c : '?' }.join
+          retry
         end
         raise e
       end
