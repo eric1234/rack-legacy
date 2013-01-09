@@ -13,13 +13,13 @@ can either leave this middleware in or use a full Apache stack to get
 added performance and security.
 
 Released under the MIT License:
-http://www.opensource.org/licenses/mit-license.php
+<http://www.opensource.org/licenses/mit-license.php>
 
-= Usage
+### Usage
 
 1. Add `config.rb` to your application root directory
-2.
-a. PHP-CGI
+2. Insert configuration:
+__1. PHP-CGI
 	require 'rack'
 	require 'rack-legacy'
 	require 'rack-rewrite'
@@ -40,7 +40,7 @@ a. PHP-CGI
 	use Rack::Legacy::Cgi, Dir.getwd
 	run Rack::File.new Dir.getwd
 
-b. PHP 5.4 Server
+__2. PHP 5.4 Server
 	require 'rack'
 	require 'rack-legacy'
 	require 'rack-rewrite'
@@ -63,7 +63,7 @@ b. PHP 5.4 Server
 	
 3. Start your rack server.
 
-= CREDIT
+### CREDIT
 
-This gem was developed by Eric Anderson (http://pixelwareinc.com) via
-work done under Red Tusk Studios (http://redtusk.com).
+This gem was developed by [Eric Anderson](http://pixelwareinc.com) via
+work done under [Red Tusk Studios](http://redtusk.com).
