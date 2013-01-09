@@ -1,5 +1,6 @@
 require 'test/unit'
 
+require 'rack/legacy/htaccess'
 require 'rack/legacy/php'
 
 class PhpTest < Test::Unit::TestCase
@@ -105,7 +106,7 @@ class PhpTest < Test::Unit::TestCase
       'auto_prepend_file' => 'backend/lib/setup.php',
       'auto_append_file'  => 'backend/lib/teardown.php',
       'output_buffering'  => 'off',
-    }, Rack::Legacy::Php::HtAccess.new(file).to_hash)
+    }, Rack::Legacy::HtAccess.new(file).to_hash)
   end
 
   def test_htaccess_search
@@ -114,7 +115,7 @@ class PhpTest < Test::Unit::TestCase
     assert_equal [
       File.join(File.dirname(__FILE__), '../fixtures/.htaccess'),
       File.join(File.dirname(__FILE__), '../fixtures/dir1/dir2/.htaccess'),
-    ], Rack::Legacy::Php::HtAccess.find_all(file, root).collect(&:file)
+    ], Rack::Legacy::HtAccess.find_all(file, root).collect(&:file)
   end
 
   def test_merge_all
@@ -127,10 +128,10 @@ class PhpTest < Test::Unit::TestCase
       'output_buffering'  => 'off',
       'foo'               => 'bar',
       'baz'               => 'boo',
-    }, Rack::Legacy::Php::HtAccess.merge_all(file, root))
+    }, Rack::Legacy::HtAccess.merge_all(file, root))
 
     assert_equal({},
-      Rack::Legacy::Php::HtAccess.merge_all(__FILE__, File.dirname(__FILE__)))
+      Rack::Legacy::HtAccess.merge_all(__FILE__, File.dirname(__FILE__)))
   end
 
   def test_htaccess_flag
