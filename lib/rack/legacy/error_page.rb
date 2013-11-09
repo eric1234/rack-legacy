@@ -7,11 +7,12 @@ module Rack
     
       # Given the environment, stdout and stderr from a programs execution
       # will generate a error page to assist in debugging
-      def initialize(env, headers, stdout, stderr)
+      def initialize(env, headers, stdout, stderr, cmd=nil)
         @env = env
         @headers = headers
         @stdout = stdout
         @stderr = stderr
+        @cmd = cmd
       end
     
       # Generate the page
@@ -46,17 +47,22 @@ module Rack
   
     <p>An error was encountered while executing
     <%=h @env['PATH_INFO'].to_s %> under the rack-legacy middleware.</p>
-  
+
+    <% if @cmd %>
+      <p>To run this from the command line use the following command.</p>
+      <pre><code><%= @cmd %></code></pre>
+    <% end %>
+
     <% unless @stdout == '' %>
       <h2>Standard Out</h2>
       <pre><code><%=h @stdout %></code></pre>
     <% end %>
-  
+
     <% unless @stderr == '' %>
       <h2>Standard Error</h2>
       <pre><code><%=h @stderr %></code></pre>
     <% end %>
-  
+
     <% unless @headers.empty? %>
       <h2>Output Headers</h2>
       <table>
@@ -68,7 +74,7 @@ module Rack
         <% end %> 
       </table>
     <% end %>
-  
+
     <% unless @env.empty? %>
       <h2>Environment</h2>
       <table>

@@ -1,5 +1,6 @@
 require 'fileutils'
 require 'tempfile'
+require 'shellwords'
 require 'rack/legacy/error_page'
 
 module Rack
@@ -75,7 +76,12 @@ module Rack
             Process.wait
             unless $?.exitstatus == 0
               status = 500
-              body = ErrorPage.new(env, headers, body, stderr).to_s
+              cmd = env.inject(path) do |assignments, (key, value)|
+                assignments.unshift "#{key}=#{value.to_s.shellescape}" if
+                  value.respond_to?(:to_str) && key =~ /^[A-Z_]+$/
+                assignments
+              end * ' '
+              body = ErrorPage.new(env, headers, body, stderr, cmd).to_s
               headers = {'Content-Type' => 'text/html'}
             end
           end
