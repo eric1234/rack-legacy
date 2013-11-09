@@ -1,5 +1,6 @@
 require 'rake/testtask'
-require 'rubygems/package_task'
+require "bundler/setup"
+Bundler::GemHelper.install_tasks
 
 Rake::TestTask.new do |t|
   t.name = 'test:unit'
@@ -35,16 +36,6 @@ END {
     Process.kill 'KILL', $server
   end
 }
-
-spec = eval File.read('rack-legacy.gemspec')
-Gem::PackageTask.new spec do |pkg|
-  pkg.need_tar = false
-end
-
-desc "Publish gem to rubygems.org"
-task :publish => :package do
-  `gem push pkg/#{spec.name}-#{spec.version}.gem`
-end
 
 desc "Run all tests"
 task :test => ['test:unit', 'test:functional']
