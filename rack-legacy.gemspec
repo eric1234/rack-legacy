@@ -1,9 +1,10 @@
 Gem::Specification.new do |s|
   s.name = 'rack-legacy'
   s.version = '0.3.7'
-  s.homepage = 'http://wiki.github.com/eric1234/rack-legacy/'
+  s.homepage = 'https://github.com/eric1234/rack-legacy'
   s.author = 'Eric Anderson'
   s.email = 'eric@pixelwareinc.com'
+  s.licenses = ['Public Domain']
   s.executables << 'rack_legacy'
   s.add_dependency 'rack'
   s.add_development_dependency 'rake'
@@ -12,9 +13,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'nokogiri'
   s.add_development_dependency 'mechanize', '>= 2.0'
   s.files = Dir['lib/**/*.rb'] + Dir['bin/*'] + Dir['share/*']
-  s.has_rdoc = true
-  s.extra_rdoc_files << 'README' << 'WISHLIST'
-  s.rdoc_options << '--main' << 'README'
+  s.extra_rdoc_files << 'README.rdoc' << 'WISHLIST.rdoc'
+  s.rdoc_options << '--main' << 'README.rdoc'
   s.summary = 'Rack-based handler for legacy CGI and PHP'
   s.description = <<-DESCRIPTION
     Rack legacy is a rack handler to help your run legacy code

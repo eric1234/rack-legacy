@@ -1,0 +1,67 @@
+= Purpose
+
+Rack Legacy tries to provide interaction with legacy environments like
+PHP and CGI while still getting the Rack portability so you don't need
+a full Apache stack.
+
+This software is currently BETA quality. Use at your own risk.
+
+= Purpose
+
+The PRIMARY use case for this software is for development of an
+application where Ruby is being used but there are also some legacy
+PHP or CGI that is running along-side the Ruby application. This
+middleware allows you to do that development without the full Apache
+stack.
+
+When you take the application to a production environment you can either
+leave this middleware in or use a full Apache stack to get added
+performance and security.
+
+= USAGE
+
+== Installation
+
+    gem install rack-legacy
+
+== Generic Rack Integration
+
+Put the following in your rack stack:
+
+    require 'rack-legacy'
+    use Rack::Legacy::Php, 'public'
+
+== Rails Usage
+
+In your Gemfile
+
+    gem 'rack-legacy'
+
+In your application.rb:
+
+    config.middleware.insert_before \
+      ActionDispatch::Static, Rack::Legacy::Php, Rails.public_path
+
+Rails < 3 is not well supported. This is because Rack::Static (later
+turned into ActionDispatch::Static) is not in the Rails stack but
+instead processed in the stack that loads Rails prior to Rails running.
+This means you cannot insert any middleware before it. This software
+previously had some hacks to work around this but with the release of
+Rails 3 the hacks where not necessary and therefore removed.
+
+If you still need to use rack-legacy on a Rails 2 app see version 0.1.5.
+
+== Pure PHP/CGI
+
+Got a project that is nothing but PHP or CGI? Run `rack_legacy` in the
+website root directory and it will start serving the files.
+
+= LICENSE
+
+This is free and unencumbered software released into the public domain.
+
+= CREDIT
+
+This gem was developed by Eric Anderson (http://pixelwareinc.com)
+partially via work done under Red Tusk Studios (http://redtusk.com) and
+Southern Web Group (http://www.southernwebgroup.com).
