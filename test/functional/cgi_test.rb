@@ -1,8 +1,6 @@
 require 'test/unit'
-
-require 'rubygems'
 require 'mechanize'
-
+require 'rack/legacy'
 require 'rack/legacy/cgi'
 
 class CgiTest < Test::Unit::TestCase
@@ -18,7 +16,7 @@ class CgiTest < Test::Unit::TestCase
     begin
       Mechanize.new.get 'http://localhost:4000/error.cgi'
     rescue Mechanize::ResponseCodeError
-      assert_match /Internal Server Error/, $!.page.body
+      assert_match 'Rack::Legacy::ExecutionError', $!.page.body
       assert_equal '500', $!.page.code
       assert_equal 'text/html', $!.page.header['content-type']
     end
@@ -28,7 +26,7 @@ class CgiTest < Test::Unit::TestCase
     begin
       Mechanize.new.get 'http://localhost:4000/syntax_error.cgi'
     rescue Mechanize::ResponseCodeError
-      assert_match /Internal Server Error/, $!.page.body
+      assert_match 'Rack::Legacy::ExecutionError', $!.page.body
       assert_equal '500', $!.page.code
       assert_equal 'text/html', $!.page.header['content-type']
     end

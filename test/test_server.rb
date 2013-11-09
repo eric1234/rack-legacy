@@ -4,6 +4,8 @@
 require 'rubygems'
 require 'webrick'
 require 'rack'
+require 'rack/showexceptions'
+require 'rack/legacy'
 require 'rack/legacy/cgi'
 require 'rack/legacy/php'
 
@@ -11,7 +13,11 @@ require 'rack/legacy/php'
 class ::WEBrick::HTTPServer; def access_log(config, req, res); end end
 class ::WEBrick::BasicLog; def log(level, data); end end
 
+# Keep ShowExceptions and sub-processes quiet for functional tests
+$stderr.reopen open('/dev/null', 'w')
+
 app = Rack::Builder.app do
+  use Rack::ShowExceptions
   use Rack::Legacy::Php, File.join(File.dirname(__FILE__), 'fixtures')
   use Rack::Legacy::Cgi, File.join(File.dirname(__FILE__), 'fixtures')
 

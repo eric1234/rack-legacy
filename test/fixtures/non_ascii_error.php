@@ -1,1 +1,0 @@
-<?php throw new Exception("エラー"); ?>

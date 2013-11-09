@@ -50,15 +50,13 @@ class PhpTest < Test::Unit::TestCase
     assert_equal 'text/html', response[1]['Content-type']
     assert_match /^PHP/, response[1]['X-Powered-By']
 
-    status, headers, body = app.call({'PATH_INFO' => 'error.php', 'REQUEST_METHOD' => 'GET'})
-    assert_equal 500, status
-    assert_equal({"Content-Type"=>"text/html"}, headers)
-    assert_match /Internal Server Error/, body.first
+    assert_raises Rack::Legacy::ExecutionError do
+      app.call({'PATH_INFO' => 'error.php', 'REQUEST_METHOD' => 'GET'})
+    end
 
-    status, headers, body = app.call({'PATH_INFO' => 'syntax_error.php', 'REQUEST_METHOD' => 'GET'})
-    assert_equal 500, status
-    assert_equal({"Content-Type"=>"text/html"}, headers)
-    assert_match /Internal Server Error/, body.first
+    assert_raises Rack::Legacy::ExecutionError do
+      app.call({'PATH_INFO' => 'syntax_error.php', 'REQUEST_METHOD' => 'GET'})
+    end
 
     response = app.call({
       'PATH_INFO' => 'querystring.php',

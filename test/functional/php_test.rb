@@ -35,7 +35,7 @@ class PhpTest < Test::Unit::TestCase
     begin
       Mechanize.new.get 'http://localhost:4000/error.php'
     rescue Mechanize::ResponseCodeError
-      assert_match /Internal Server Error/, $!.page.body
+      assert_match 'Rack::Legacy::ExecutionError', $!.page.body
       assert_equal '500', $!.page.code
       assert_equal 'text/html', $!.page.header['content-type']
     end
@@ -45,20 +45,9 @@ class PhpTest < Test::Unit::TestCase
     begin
       Mechanize.new.get 'http://localhost:4000/syntax_error.php'
     rescue Mechanize::ResponseCodeError
-      assert_match /Internal Server Error/, $!.page.body
+      assert_match 'Rack::Legacy::ExecutionError', $!.page.body
       assert_equal '500', $!.page.code
       assert_equal 'text/html', $!.page.header['content-type']
-    end
-  end
-
-  def test_non_ascii_error
-    begin
-      Mechanize.new.get 'http://localhost:4000/non_ascii_error.php'
-    rescue Mechanize::ResponseCodeError
-      assert_match /Internal Server Error/, $!.page.body
-      assert_no_match /invalid byte sequence/, $!.page.body
-      assert_match /&#12456;&#12521;&#12540;/, $!.page.body
-      assert_equal '500', $!.page.code
     end
   end
 

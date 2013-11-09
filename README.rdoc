@@ -2,21 +2,20 @@
 
 Rack Legacy tries to provide interaction with legacy environments like
 PHP and CGI while still getting the Rack portability so you don't need
-a full Apache stack.
+a full Apache/lighttpd stack.
 
 This software is currently BETA quality. Use at your own risk.
 
 = Purpose
 
-The PRIMARY use case for this software is for development of an
-application where Ruby is being used but there are also some legacy
-PHP or CGI that is running along-side the Ruby application. This
-middleware allows you to do that development without the full Apache
-stack.
+The PRIMARY use case is while developing an application where Ruby is
+being used but there are also some legacy PHP or CGI that is running
+along-side your Ruby. This middleware allows you to do that development
+without the full Apache stack.
 
 When you take the application to a production environment you can either
-leave this middleware in or use a full Apache stack to get added
-performance and security.
+leave this middleware in or use a full Apache stack to get more battle
+tested performance and security.
 
 = USAGE
 
