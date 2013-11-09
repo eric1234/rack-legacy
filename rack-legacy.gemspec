@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'rack-legacy'
-  s.version = '0.4.0'
+  s.version = '0.6.0'
   s.homepage = 'https://github.com/eric1234/rack-legacy'
   s.author = 'Eric Anderson'
   s.email = 'eric@pixelwareinc.com'
@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'nokogiri'
   s.add_development_dependency 'mechanize', '>= 2.0'
   s.files = Dir['lib/**/*.rb'] + Dir['bin/*'] + Dir['share/*']
-  s.extra_rdoc_files << 'README.rdoc' << 'WISHLIST.rdoc'
+  s.extra_rdoc_files << 'README.rdoc'
   s.rdoc_options << '--main' << 'README.rdoc'
   s.summary = 'Rack-based handler for legacy CGI and PHP'
   s.description = <<-DESCRIPTION
