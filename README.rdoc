@@ -1,4 +1,4 @@
-= Purpose
+= Introduction
 
 Rack Legacy tries to provide interaction with legacy environments like
 PHP and CGI while still getting the Rack portability so you don't need
