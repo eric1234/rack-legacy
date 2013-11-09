@@ -45,6 +45,8 @@ module Rack
 
       # Will run the given path with the given environment
       def run(env, *path)
+        env['DOCUMENT_ROOT'] = public_dir
+        env['SERVER_SOFTWARE'] = 'Rack Legacy'
         status = 200
         headers = {}
         body = ''
@@ -53,9 +55,10 @@ module Rack
         IO.popen('-', 'r+') do |io|
           if io.nil?  # Child
             $stderr.reopen stderr.path
-            ENV['DOCUMENT_ROOT'] = public_dir
-            ENV['SERVER_SOFTWARE'] = 'Rack Legacy'
-            env.each {|k, v| ENV[k] = v if v.respond_to? :to_str}
+            env.each do |key, value|
+              ENV[key] = value if
+                value.respond_to?(:to_str) && key =~ /^[A-Z_]+$/
+            end
             exec *path
           else        # Parent
             io.write(env['rack.input'].read) if env['rack.input']
