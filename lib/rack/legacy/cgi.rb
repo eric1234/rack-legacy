@@ -1,23 +1,22 @@
-require 'fileutils'
 require 'shellwords'
 
 class Rack::Legacy::Cgi
-  attr_reader :public_dir
 
-  # Will setup a new instance of the Cgi middleware executing
-  # programs located in the given public_dir
-  #
-  #   use Rack::Legacy::Cgi, 'cgi-bin'
-  def initialize(app, public_dir=FileUtils.pwd)
+  # Will setup a new instance of the CGI middleware executing
+  # programs located in the given `public_dir`
+  def initialize app, public_dir=Dir.getwd
     @app = app
     @public_dir = public_dir
   end
 
   # Middleware, so if it looks like we can run it then do so.
   # Otherwise send it on for someone else to handle.
-  def call(env)
-    if valid? env['PATH_INFO']
-      run env, full_path(env['PATH_INFO'])
+  def call env
+    path = env['PATH_INFO']
+    path = path[1..-1] if path =~ /\//
+    path = ::File.expand_path path, @public_dir
+    if valid? path
+      run env, path
     else
       @app.call env
     end
@@ -26,22 +25,15 @@ class Rack::Legacy::Cgi
   # Check to ensure the path exists and it is a child of the
   # public directory.
   def valid?(path)
-    fp = full_path path
-    fp.start_with?(::File.expand_path public_dir) &&
-    ::File.file?(fp) && ::File.executable?(fp)
+    path.start_with?(::File.expand_path @public_dir) &&
+    ::File.file?(path) && ::File.executable?(path)
   end
 
-  protected
-
-  # Returns the path with the public_dir pre-pended and with the
-  # paths expanded (so we can check for security issues)
-  def full_path(path)
-    ::File.expand_path ::File.join(public_dir, path)
-  end
+  private
 
   # Will run the given path with the given environment
-  def run(env, *path)
-    env['DOCUMENT_ROOT'] = public_dir
+  def run env, path
+    env['DOCUMENT_ROOT'] = @public_dir
     env['SERVER_SOFTWARE'] = 'Rack Legacy'
     status = 200
     headers = {}
@@ -55,7 +47,7 @@ class Rack::Legacy::Cgi
           ENV[key] = value if
             value.respond_to?(:to_str) && key =~ /^[A-Z_]+$/
         end
-        exec *path
+        exec path
       else        # Parent
         # Send request to CGI sub-process
         io.write(env['rack.input'].read) if env['rack.input']
@@ -82,7 +74,7 @@ class Rack::Legacy::Cgi
         unless $?.exitstatus == 0
           # Build full command for easier debugging. Output to
           # stderr to prevent user from getting too much information.
-          cmd = env.inject(path) do |assignments, (key, value)|
+          cmd = env.inject([path]) do |assignments, (key, value)|
             assignments.unshift "#{key}=#{value.to_s.shellescape}" if
               value.respond_to?(:to_str) && key =~ /^[A-Z_]+$/
             assignments

@@ -6,10 +6,11 @@ require 'rack/legacy/cgi'
 class CgiTest < Test::Unit::TestCase
 
   def test_valid?
-    assert app.valid?('success.cgi') # Valid file
-    assert !app.valid?('../unit/cgi_test.rb') # Valid file but outside public
-    assert !app.valid?('missing.cgi') # File not found
-    assert !app.valid?('./') # Directory
+    assert app.valid?(fixture_file('success.cgi')) # Valid file
+    assert !app.valid?(fixture_file('success.php')) # Valid file but not executable
+    assert !app.valid?(fixture_file('../unit/cgi_test.rb')) # Valid file but outside public
+    assert !app.valid?(fixture_file('missing.cgi')) # File not found
+    assert !app.valid?(fixture_file('./')) # Directory
   end
 
   def test_call
@@ -68,6 +69,10 @@ class CgiTest < Test::Unit::TestCase
   end
 
   private
+
+  def fixture_file path
+    File.expand_path path, File.join(File.dirname(__FILE__), '../fixtures')
+  end
 
   def app
     Rack::Legacy::Cgi.new \

@@ -1,1 +1,1 @@
-<?php header('Status: 404 Not Found'); ?>
+<?php http_response_code(404); ?>

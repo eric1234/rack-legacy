@@ -1,76 +1,54 @@
 require 'rack/legacy'
-require 'rack/legacy/cgi'
+require 'rack/request'
+require 'rack/reverse_proxy'
+require 'childprocess'
 
-class Rack::Legacy::Php < Rack::Legacy::Cgi
+class Rack::Legacy::Php
 
-  # Like Rack::Legacy::Cgi.new except allows an additional argument
-  # of which executable to use to run the PHP code.
+  # Proxies off requests to PHP files to the built-in PHP webserver.
   #
-  #  use Rack::Legacy::Php, 'public', 'php5-cgi'
-  def initialize(app, public_dir=FileUtils.pwd, php_exe='php-cgi')
-    super app, public_dir
-    @php_exe = php_exe
+  # public_dir::
+  #    Location of PHP files. Default to current working directory.
+  # php_exe::
+  #    Location of `php` exec. Will process through shell so is
+  #    generally not needed since it is in the path.
+  # port::
+  #    Requests are proxied off to the built-in PHP webserver. It
+  #    will run on the given port. If you are already using that port
+  #    for something else you may need to change this option.
+  # quiet::
+  #    By default the PHP server inherits the parent process IO. Set
+  #    this to true to hide the PHP server output
+  # 
+  def initialize app, public_dir=Dir.getwd, php_exe='php', port=8180, quiet=false
+    @app = app; @public_dir = public_dir
+    @proxy = Rack::ReverseProxy.new {reverse_proxy /^.*$/, "http://localhost:#{port}"}
+    @php = ChildProcess.build php_exe,
+      '-S', "localhost:#{port}", '-t', public_dir
+    @php.io.inherit! unless quiet
+    @php.start
+    at_exit {@php.stop if @php.alive?}
   end
 
-  # Override to check for php extension. Still checks if
-  # file is in public path and it is a file like superclass.
-  def valid?(path)
-    sp = path_parts(full_path path)[0]
-
-    # Must have a php extension or be a directory
-    return false unless
-      (::File.file?(sp) && sp =~ /\.php$/) ||
-      ::File.directory?(sp)
-
-    # Must be in public directory for security
-    sp.start_with? ::File.expand_path(@public_dir)
-  end
-
-  # Monkeys with the arguments so that it actually runs PHP's cgi
-  # program with the path as an argument to that program.
-  def run(env, path)
-    script, info = *path_parts(path)
-    if ::File.directory? script
-      # If directory then assume index.php
-      script = ::File.join script, 'index.php';
-      # Ensure it ends in / which some PHP scripts depend on
-      path = "#{path}/" unless path =~ /\/$/
+  # If it looks like it is one of ours proxy off to PHP server.
+  # Otherwise send down the stack.
+  def call env
+    if valid? env['PATH_INFO']
+      @php.start unless @php.alive?
+      @proxy.call env
+    else
+      @app.call env
     end
-    env['SCRIPT_FILENAME'] = script
-    env['SCRIPT_NAME'] = strip_public script
-    env['PATH_INFO'] = info
-    env['REQUEST_URI'] = strip_public path
-    env['REQUEST_URI'] += '?' + env['QUERY_STRING'] if
-      env.has_key?('QUERY_STRING') && !env['QUERY_STRING'].empty?
-    super env, @php_exe, "-d cgi.force_redirect=0"
   end
 
-  private
+  # Make sure it points to a valid PHP file. No need to ensure it
+  # is in the public directory since PHP will do that for us.
+  def valid? path
+    return false unless path =~ /\.php/
 
-  def strip_public(path)
-    path.sub ::File.expand_path(public_dir), ''
-  end
-
-  # Given a full path will separate the script part from the
-  # path_info part. Returns an array. The first element is the
-  # script. The second element is the path info.
-  def path_parts(path)
-    return [path, nil] unless path =~ /.php/
-    script, info = *path.split('.php', 2)
-    script += '.php'
-    [script, info]
-  end
-
-  # Given a full path will extract just the info part. So
-  #
-  #   /index.php/foo/bar
-  #
-  # will return /foo/bar, but
-  #
-  #   /index.php
-  #
-  # will return an empty string.
-  def info_path(path)
-    path.split('.php', 2)[1].to_s
+    path = path[1..-1] if path =~ /^\//
+    path = path.split('.php', 2)[0] + '.php'
+    path = ::File.expand_path path, @public_dir
+    ::File.file? path
   end
 end

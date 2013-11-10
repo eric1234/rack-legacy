@@ -33,7 +33,7 @@ end
 END {
   if $server
     puts 'Shutting down test server...'
-    Process.kill 'KILL', $server
+    Process.kill 'TERM', $server
   end
 }
 

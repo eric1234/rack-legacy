@@ -15,37 +15,10 @@ class PhpTest < Test::Unit::TestCase
     assert_match /^PHP/, response.header['x-powered-by']
   end
 
-  def test_default
-    response = Mechanize.new.get 'http://localhost:4000/'
-    assert_equal 'default', response.body
-    assert_equal '200', response.code
-    assert_equal 'text/html', response.header['content-type']
-    assert_match /^PHP/, response.header['x-powered-by']
-  end
-
-  def test_default_directory
-    response = Mechanize.new.get 'http://localhost:4000/dir1'
-    assert_equal 'default directory', response.body
-    assert_equal '200', response.code
-    assert_equal 'text/html', response.header['content-type']
-    assert_match /^PHP/, response.header['x-powered-by']
-  end
-
-  def test_error
-    begin
-      Mechanize.new.get 'http://localhost:4000/error.php'
-    rescue Mechanize::ResponseCodeError
-      assert_match 'Rack::Legacy::ExecutionError', $!.page.body
-      assert_equal '500', $!.page.code
-      assert_equal 'text/html', $!.page.header['content-type']
-    end
-  end
-
   def test_syntax_error
     begin
       Mechanize.new.get 'http://localhost:4000/syntax_error.php'
     rescue Mechanize::ResponseCodeError
-      assert_match 'Rack::Legacy::ExecutionError', $!.page.body
       assert_equal '500', $!.page.code
       assert_equal 'text/html', $!.page.header['content-type']
     end
