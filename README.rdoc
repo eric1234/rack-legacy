@@ -55,15 +55,15 @@ If you still need to use rack-legacy on a Rails 2 app see version 0.1.5.
 The above configuration just adds PHP support to your stack. That is
 just one of currently three modules available. The current modules are:
 
-  Rack::Legacy::Cgi::
-    Provides support for executing any standard CGI script. It is
-    important that script has the executable bit set.
-  Rack::Legacy::Php::
-    Provides support for executing PHP scripts.
-  Rack::Legacy::Index::
-    Provides support for running "index.php", "index.cgi" or "index.html"
-    when just a directory is specified in the request. You will want to
-    install this module before the CGI or PHP ones.
+Rack::Legacy::Cgi::
+  Provides support for executing any standard CGI script. It is
+  important that script has the executable bit set.
+Rack::Legacy::Php::
+  Provides support for executing PHP scripts.
+Rack::Legacy::Index::
+  Provides support for running "index.php", "index.cgi" or "index.html"
+  when just a directory is specified in the request. You will want to
+  install this module before the CGI or PHP ones.
 
 An example rackup file that enables all modules (but exception reporting
 and static file delivery) is:
