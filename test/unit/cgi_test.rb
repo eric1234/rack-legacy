@@ -1,9 +1,8 @@
-require 'test/unit'
-require 'flexmock/test_unit'
+require 'minitest/autorun'
 require 'rack/legacy'
 require 'rack/legacy/cgi'
 
-class CgiTest < Test::Unit::TestCase
+class CgiTest < MiniTest::Unit::TestCase
 
   def test_valid?
     assert app.valid?(fixture_file('success.cgi')) # Valid file

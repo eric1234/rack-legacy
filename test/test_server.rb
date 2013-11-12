@@ -1,13 +1,11 @@
-# The unit tests do full end-to-end testing therefore a real server
-# needs to be run. Start this script before running the unit tests.
+# The functional tests do full end-to-end testing therefore a real
+# server needs to be run. Start this script before running the
+# functional tests. The Rakefile does this automatically.
 
-require 'rubygems'
 require 'webrick'
 require 'rack'
 require 'rack/showexceptions'
 require 'rack/legacy'
-require 'rack/legacy/cgi'
-require 'rack/legacy/php'
 
 # Keep WEBrick quiet for functional tests
 class ::WEBrick::HTTPServer; def access_log(config, req, res); end end

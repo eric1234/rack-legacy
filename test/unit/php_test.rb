@@ -1,7 +1,8 @@
-require 'test/unit'
+require 'minitest/autorun'
+require 'rack/legacy'
 require 'rack/legacy/php'
 
-class PhpTest < Test::Unit::TestCase
+class PhpTest < MiniTest::Unit::TestCase
 
   def test_valid?
     assert app.valid?('success.php') # Valid file

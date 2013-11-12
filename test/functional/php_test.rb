@@ -1,11 +1,7 @@
-require 'test/unit'
-
-require 'rubygems'
+require 'minitest/autorun'
 require 'mechanize'
 
-require 'rack/legacy/php'
-
-class PhpTest < Test::Unit::TestCase
+class PhpTest < MiniTest::Unit::TestCase
 
   def test_success
     response = Mechanize.new.get 'http://localhost:4000/success.php'
@@ -59,13 +55,11 @@ class PhpTest < Test::Unit::TestCase
   end
 
   def test_flushing
-    assert_nothing_raised do
-      # 5 seconds should be enough to know it didn't lock up
-      timeout 5 do
-        response = Mechanize.new.get 'http://localhost:4000/flush.php'
-        assert_equal '200', response.code
-        assert_equal 'text/html', response.header['content-type']
-      end
+    # 5 seconds should be enough to know it didn't lock up
+    timeout 5 do
+      response = Mechanize.new.get 'http://localhost:4000/flush.php'
+      assert_equal '200', response.code
+      assert_equal 'text/html', response.header['content-type']
     end
   end
 
