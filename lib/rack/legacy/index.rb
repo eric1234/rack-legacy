@@ -2,7 +2,7 @@ class Rack::Legacy::Index
 
   # Will rewrite the request if the request is for a directory and
   # one of the index files specified exists.
-  def initialize app, public_dir, order=['index.php', 'index.cgi', 'index.html']
+  def initialize app, public_dir=Dir.getwd, order=['index.php', 'index.cgi', 'index.html']
     @app = app
     @public_dir = public_dir
     @order = order
