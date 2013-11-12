@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'rack-legacy'
-  s.version = '0.8.0'
+  s.version = '0.8.5'
   s.homepage = 'https://github.com/eric1234/rack-legacy'
   s.author = 'Eric Anderson'
   s.email = 'eric@pixelwareinc.com'
@@ -11,7 +11,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'rack-reverse-proxy'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'httparty'
-  s.add_development_dependency 'flexmock'
   s.add_development_dependency 'nokogiri'
   s.add_development_dependency 'mechanize', '>= 2.0'
   s.files = Dir['lib/**/*.rb'] + Dir['bin/*'] + Dir['share/*']

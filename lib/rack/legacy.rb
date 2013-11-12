@@ -10,5 +10,6 @@ module Rack
   end
 end
 
+require 'rack/legacy/index'
 require 'rack/legacy/cgi'
 require 'rack/legacy/php'
