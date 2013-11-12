@@ -15,40 +15,40 @@ class CgiTest < Test::Unit::TestCase
 
   def test_call
     assert_equal \
-      [200, {"Content-Type"=>"text/html", "Content-Length"=>"7"}, ['Success']],
-      app.call({'PATH_INFO' => 'success.cgi', 'REQUEST_METHOD' => 'GET'})
+      [200, {"Content-Type"=>"text/html", "Content-Length"=>"7"}, 'Success'],
+      call({'PATH_INFO' => 'success.cgi', 'REQUEST_METHOD' => 'GET'})
     assert_equal \
       [200, {"Content-Type"=>"text/html"}, 'Endpoint'],
-      app.call({'PATH_INFO' => 'missing.cgi'})
-    assert_equal [200, {}, ['']],
-      app.call({'PATH_INFO' => 'empty.cgi', 'REQUEST_METHOD' => 'GET'})
-    assert_equal [404, {"Content-Type"=>"text/html"}, ['']],
-      app.call({'PATH_INFO' => '404.cgi', 'REQUEST_METHOD' => 'GET'})
-    assert_equal [200, {"Content-Type"=>"text/html", 'Set-Cookie' => "cookie1\ncookie2"}, ['']],
-      app.call({'PATH_INFO' => 'dup_headers.cgi', 'REQUEST_METHOD' => 'GET'})
+      call({'PATH_INFO' => 'missing.cgi'})
+    assert_equal [200, {}, ''],
+      call({'PATH_INFO' => 'empty.cgi', 'REQUEST_METHOD' => 'GET'})
+    assert_equal [404, {"Content-Type"=>"text/html"}, ''],
+      call({'PATH_INFO' => '404.cgi', 'REQUEST_METHOD' => 'GET'})
+    assert_equal [200, {"Content-Type"=>"text/html", 'Set-Cookie' => "cookie1\ncookie2"}, ''],
+      call({'PATH_INFO' => 'dup_headers.cgi', 'REQUEST_METHOD' => 'GET'})
 
     assert_raises Rack::Legacy::ExecutionError do
       $stderr.reopen open('/dev/null', 'w')
-      app.call({'PATH_INFO' => 'error.cgi', 'REQUEST_METHOD' => 'GET'})
+      call({'PATH_INFO' => 'error.cgi', 'REQUEST_METHOD' => 'GET'})
       $stderr.reopen STDERR
     end
 
     assert_raises Rack::Legacy::ExecutionError do
       $stderr.reopen open('/dev/null', 'w')
-      app.call({'PATH_INFO' => 'syntax_error.cgi', 'REQUEST_METHOD' => 'GET'})
+      call({'PATH_INFO' => 'syntax_error.cgi', 'REQUEST_METHOD' => 'GET'})
       $stderr.reopen STDERR
     end
 
     assert_equal \
-      [200, {"Content-Type"=>"text/html", "Content-Length"=>"5"}, ['query']],
-      app.call({
+      [200, {"Content-Type"=>"text/html", "Content-Length"=>"5"}, 'query'],
+      call({
         'PATH_INFO' => 'param.cgi',
         'QUERY_STRING' => 'q=query',
         'REQUEST_METHOD' => 'GET'
       })
     assert_equal \
-      [200, {"Content-Type"=>"text/html", "Content-Length"=>"4"}, ['post']],
-      app.call({
+      [200, {"Content-Type"=>"text/html", "Content-Length"=>"4"}, 'post'],
+      call({
         'PATH_INFO' => 'param.cgi',
         'REQUEST_METHOD' => 'POST',
         'CONTENT_LENGTH' => '6',
@@ -62,8 +62,8 @@ class CgiTest < Test::Unit::TestCase
   end
 
   def test_environment
-    status, headers, body = *app.call({'PATH_INFO' => 'env.cgi', 'REQUEST_METHOD' => 'GET'})
-    env = eval(body[0])
+    status, headers, body = *call({'PATH_INFO' => 'env.cgi', 'REQUEST_METHOD' => 'GET'})
+    env = eval body
     assert File.join(File.dirname(__FILE__), '../fixtures'), env['DOCUMENT_ROOT']
     assert 'Rack Legacy', env['SERVER_SOFTWARE']
   end
@@ -74,9 +74,15 @@ class CgiTest < Test::Unit::TestCase
     File.expand_path path, File.join(File.dirname(__FILE__), '../fixtures')
   end
 
+  def call env
+    status, headers, body = *app.call(env)
+    body = body.read
+    [status, headers, body]
+  end
+
   def app
-    Rack::Legacy::Cgi.new \
-      proc {[200, {'Content-Type' => 'text/html'}, 'Endpoint']},
+    @app ||= Rack::Legacy::Cgi.new \
+      proc {[200, {'Content-Type' => 'text/html'}, StringIO.new('Endpoint')]},
       File.join(File.dirname(__FILE__), '../fixtures')
   end
 
