@@ -65,8 +65,8 @@ Rack::Legacy::Index::
   when just a directory is specified in the request. You will want to
   install this module before the CGI or PHP ones.
 
-An example rackup file that enables all modules (but exception reporting
-and static file delivery) is:
+An example rackup file that enables all modules (plus exception
+reporting and static file delivery) is:
 
     require 'rack/showexceptions'
     require 'rack-legacy'
