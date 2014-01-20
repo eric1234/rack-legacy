@@ -22,7 +22,10 @@ class Rack::Legacy::Php
   # 
   def initialize app, public_dir=Dir.getwd, php_exe='php', port=8180, quiet=false
     @app = app; @public_dir = public_dir
-    @proxy = Rack::ReverseProxy.new {reverse_proxy /^.*$/, "http://localhost:#{port}"}
+    @proxy = Rack::ReverseProxy.new do
+      reverse_proxy_options preserve_host: false
+      reverse_proxy /^.*$/, "http://localhost:#{port}"
+    end
     @php = ChildProcess.build php_exe,
       '-S', "localhost:#{port}", '-t', public_dir
     @php.io.inherit! unless quiet
@@ -35,6 +38,9 @@ class Rack::Legacy::Php
   def call env
     if valid? env['PATH_INFO']
       @php.start unless @php.alive?
+      ip = Rack::Request.new(env).ip
+      env['HTTP_X_FORWARDED_FOR'] = ip if ip
+      env['PATH_INFO'].gsub! /\/index.php$/, '/'
       @proxy.call env
     else
       @app.call env
