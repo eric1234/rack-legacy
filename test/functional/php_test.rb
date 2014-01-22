@@ -11,6 +11,22 @@ class PhpTest < MiniTest::Unit::TestCase
     assert_match /^PHP/, response.header['x-powered-by']
   end
 
+  def test_index_with_leading_slash
+    response = Mechanize.new.get 'http://localhost:4000/'
+    assert_equal 'PHP index', response.body
+    assert_equal '200', response.code
+    assert_equal 'text/html', response.header['content-type']
+    assert_match /^PHP/, response.header['x-powered-by']
+  end
+
+  def test_index_without_leading_slash
+    response = Mechanize.new.get 'http://localhost:4000'
+    assert_equal 'PHP index', response.body
+    assert_equal '200', response.code
+    assert_equal 'text/html', response.header['content-type']
+    assert_match /^PHP/, response.header['x-powered-by']
+  end
+
   def test_syntax_error
     begin
       Mechanize.new.get 'http://localhost:4000/syntax_error.php'

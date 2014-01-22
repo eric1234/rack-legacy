@@ -19,6 +19,12 @@ class PhpTest < MiniTest::Unit::TestCase
     assert_equal 'text/html', response[1]['Content-type'].first
     assert_match /^PHP/, response[1]['X-Powered-By'].first
 
+    response = app.call 'PATH_INFO' => '/', 'REQUEST_METHOD' => 'GET'
+    assert_equal '200', response.first
+    assert_equal ['PHP index'], response.last
+    assert_equal 'text/html', response[1]['Content-type'].first
+    assert_match /^PHP/, response[1]['X-Powered-By'].first
+
     assert_equal \
       [200, {"Content-Type"=>"text/html"}, ['Endpoint']],
       app.call({'PATH_INFO' => 'missing.php'})
