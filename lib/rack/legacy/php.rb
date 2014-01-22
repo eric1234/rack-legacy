@@ -36,14 +36,15 @@ class Rack::Legacy::Php
   # If it looks like it is one of ours proxy off to PHP server.
   # Otherwise send down the stack.
   def call env
-    if valid? env['PATH_INFO']
+    orig_env = env.dup
+    if resolve_path(env)
       @php.start unless @php.alive?
       ip = Rack::Request.new(env).ip
       env['HTTP_X_FORWARDED_FOR'] = ip if ip
       env['PATH_INFO'].gsub! /\/index.php$/, '/'
       @proxy.call env
     else
-      @app.call env
+      @app.call orig_env
     end
   end
 
@@ -57,4 +58,20 @@ class Rack::Legacy::Php
     path = ::File.expand_path path, @public_dir
     ::File.file? path
   end
+
+  private
+
+    # Fix the path info when the index page is not
+    # explicity given
+    def resolve_path(env)
+      return true if valid? env['PATH_INFO']
+
+      if env['PATH_INFO'][-1] == "/"
+        env['PATH_INFO'] += "index.php"
+      else
+        env['PATH_INFO'] += "/index.php"
+      end
+
+      valid? env['PATH_INFO']
+    end
 end
