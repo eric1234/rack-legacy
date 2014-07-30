@@ -17,7 +17,7 @@ $stderr.reopen open('/dev/null', 'w')
 app = Rack::Builder.app do
   use Rack::ShowExceptions
   use Rack::Legacy::Index, File.join(File.dirname(__FILE__), 'fixtures')
-  use Rack::Legacy::Php, File.join(File.dirname(__FILE__), 'fixtures'), 'php', 8180, true
+  use Rack::Legacy::Php, File.join(File.dirname(__FILE__), 'fixtures'), 'php', true
   use Rack::Legacy::Cgi, File.join(File.dirname(__FILE__), 'fixtures')
 
   run lambda { |env| [200, {'Content-Type' => 'text/html'}, ['Endpoint']] }

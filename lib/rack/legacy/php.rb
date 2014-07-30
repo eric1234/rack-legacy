@@ -12,16 +12,15 @@ class Rack::Legacy::Php
   # php_exe::
   #    Location of `php` exec. Will process through shell so is
   #    generally not needed since it is in the path.
-  # port::
-  #    Requests are proxied off to the built-in PHP webserver. It
-  #    will run on the given port. If you are already using that port
-  #    for something else you may need to change this option.
   # quiet::
   #    By default the PHP server inherits the parent process IO. Set
   #    this to true to hide the PHP server output
-  # 
-  def initialize app, public_dir=Dir.getwd, php_exe='php', port=8180, quiet=false
+  #
+  def initialize app, public_dir=Dir.getwd, php_exe='php', quiet=false
     @app = app; @public_dir = public_dir
+    server = TCPServer.new('127.0.0.1', 0)
+    port = server.addr[1]
+    server.close()
     @proxy = Rack::ReverseProxy.new do
       reverse_proxy_options preserve_host: false
       reverse_proxy /^.*$/, "http://localhost:#{port}"

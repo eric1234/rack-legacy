@@ -79,7 +79,7 @@ class PhpTest < MiniTest::Unit::TestCase
     return @app if @app
     @app = Rack::Legacy::Php.new \
       proc {[200, {'Content-Type' => 'text/html'}, ['Endpoint']]},
-      File.join(File.dirname(__FILE__), '../fixtures'), 'php', 8180, true
+      File.join(File.dirname(__FILE__), '../fixtures'), 'php', true
     sleep 2 # Wait for it to boot
     @app
   end
