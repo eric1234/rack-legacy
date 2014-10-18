@@ -25,8 +25,8 @@ class Rack::Legacy::Php
       reverse_proxy_options preserve_host: false
       reverse_proxy /^.*$/, "http://localhost:#{port}"
     end
-    @php = ChildProcess.build php_exe,
-      '-S', "localhost:#{port}", '-t', public_dir
+    @php = ChildProcess.build(php_exe, *php_process_parameters(port))
+    @php.environment.merge! php_environment
     @php.io.inherit! unless quiet
     @php.start
     at_exit {@php.stop if @php.alive?}
@@ -56,4 +56,15 @@ class Rack::Legacy::Php
     path = ::File.expand_path path, @public_dir
     ::File.file? path
   end
+
+  # Specify the parameters to be sent to the PHP child process.
+  def php_process_parameters(port)
+    [ '-S', "localhost:#{port}", '-t', @public_dir ]
+  end
+
+  # Specify environment settings for the PHP child process.
+  def php_environment
+    {}
+  end
+
 end
