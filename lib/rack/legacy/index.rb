@@ -19,7 +19,7 @@ class Rack::Legacy::Index
     @order.reverse.each do |index|
       full_index = File.join dir, index
       new_path = File.join env['PATH_INFO'], index
-      rewrite = new_path if File.exists? full_index
+      rewrite = new_path if File.exist? full_index
     end if File.directory? dir
     env['PATH_INFO'] = rewrite
     @app.call env
